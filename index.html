@@ -1,0 +1,642 @@
+<!DOCTYPE html>
+<html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#142c36"><title>PDF → EPUB | Meu Conversor</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png">
+<style>
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#17313a;background:#eef3f4}*{box-sizing:border-box}body{margin:0}.wrap{max-width:850px;margin:auto;padding:24px 16px 50px}header{background:#142c36;color:white;padding:24px 16px}header .inner{max-width:850px;margin:auto}h1{margin:0;font-size:clamp(1.5rem,4vw,2.3rem)}header p{color:#c8d7dc;margin-bottom:0}.panel{background:white;border:1px solid #dce5e7;border-radius:18px;padding:24px;margin-top:20px;box-shadow:0 4px 18px #1536400a}h2{font-size:1.15rem;margin:0 0 14px}.drop{border:2px dashed #7aa5ac;border-radius:14px;padding:35px 16px;text-align:center;cursor:pointer;background:#f7fbfb}.drop.over{background:#e3f4f2;border-color:#137e76}.drop strong{display:block;font-size:1.1rem}.muted{color:#5b737b;font-size:.92rem}input[type=file]{display:none}.fileinfo{margin-top:12px;overflow-wrap:anywhere;font-weight:600;display:flex;gap:14px;align-items:center}.fileinfo canvas{width:60px;border-radius:4px;box-shadow:0 1px 5px #0003;flex:none}.fileinfo canvas:not([width]){display:none}.settings{display:grid;grid-template-columns:1fr 1fr;gap:16px}label{display:block;font-weight:600;margin-bottom:6px}select,input[type=text],input[type=number]{width:100%;padding:12px;border:1px solid #b8cbd0;border-radius:10px;font:inherit;background:white;color:inherit}button,.btn{display:inline-block;border:0;background:#087e70;color:white;font:inherit;font-weight:700;border-radius:11px;padding:14px 20px;cursor:pointer;text-decoration:none}button:hover,.btn:hover{background:#08695f}button:disabled{opacity:.5;cursor:not-allowed}.btn.busy{opacity:.6;pointer-events:none}.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px}progress{width:100%;height:18px;accent-color:#087e70}#status{font-size:.95rem;min-height:24px;margin-top:12px}.note{font-size:.9rem;line-height:1.6;color:#435d66}.hide{display:none!important}footer{color:#5b737b;text-align:center;font-size:.85rem;margin-top:25px}@media(max-width:560px){.settings{grid-template-columns:1fr}.panel{padding:18px}.wrap{padding-top:10px}}
+.modehelp{background:#eff8f6;border-left:4px solid #087e70;padding:12px;border-radius:8px}.history{padding-left:20px}.history li{margin:10px 0}.smallbtn{padding:8px 12px;font-size:.9rem}
+.secondary{background:#e3f4f2;color:#086b60}.secondary:hover{background:#d2ece8}.danger{background:#fbe9e5;color:#a4442b}.danger:hover{background:#f6d8d0}
+.warn{background:#fff5e0;border-left:4px solid #d99a1e;padding:10px 12px;border-radius:8px;font-size:.9rem;color:#6b4d0f;margin-top:12px}
+details.adv{margin-top:18px;border:1px solid #dce5e7;border-radius:12px;padding:0 16px}details.adv summary{cursor:pointer;font-weight:700;padding:14px 0;color:#087e70}details.adv[open] summary{border-bottom:1px solid #e6eef0;margin-bottom:14px}
+.range{display:flex;gap:8px;align-items:center}.range span{flex:none}
+.checks{display:grid;gap:10px;margin:16px 0}.checks label{display:flex;gap:10px;align-items:flex-start;font-weight:500;margin:0}.checks input{margin-top:4px;accent-color:#087e70;width:18px;height:18px;flex:none}
+.advgrid{padding-bottom:4px}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.chip{background:#e3f4f2;color:#086b60;border-radius:99px;padding:5px 11px;font-size:.84rem;font-weight:700}.chip.alt{background:#fff5e0;color:#8a5a00}
+.reader{display:grid;grid-template-columns:230px 1fr;gap:12px}.reader>div{min-width:0}@media(max-width:680px){.reader{grid-template-columns:1fr}}
+.toc{max-height:520px;overflow:auto;border:1px solid #dce5e7;border-radius:12px;padding:6px}@media(max-width:680px){.toc{max-height:190px}}
+.toc button{display:block;width:100%;text-align:left;background:none;color:#17313a;font-weight:500;font-size:.9rem;padding:8px 10px;border-radius:8px}.toc button:hover{background:#f0f6f6}.toc button.on{background:#e3f4f2;color:#086b60;font-weight:700}
+.editbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.editbar input{flex:1 1 200px;padding:9px 11px}.editbar button{padding:9px 12px;font-size:.88rem}
+.blockbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#142c36;color:#fff;border-radius:10px;padding:8px 10px;margin-bottom:10px;font-size:.88rem}.blockbar span{flex:1 1 140px}.blockbar button{padding:8px 11px;font-size:.85rem}
+.pagepv{background:#fbf9f4;border:1px solid #dce5e7;border-radius:12px;padding:22px 20px;max-height:520px;overflow:auto;font-family:Georgia,"Times New Roman",serif;font-size:1.02rem;line-height:1.6;color:#222}
+.pagepv h1{font-size:1.45rem;line-height:1.25;margin:.2em 0 .8em}.pagepv h2{font-size:1.15rem;margin:1.2em 0 .6em}.pagepv p{margin:0 0 .5em;text-indent:1.2em;text-align:justify}.pagepv p.li{text-indent:0;margin-left:.6em}.pagepv img{max-width:100%;display:block;margin:10px auto;border-radius:4px;box-shadow:0 1px 6px #0002}
+.pagepv.editable [data-b]{cursor:pointer;border-radius:4px;transition:background .1s}.pagepv.editable [data-b]:hover{background:#0870601a}.pagepv [data-b].sel{background:#08706033;outline:2px solid #087e70}
+.pvnav{display:flex;justify-content:space-between;gap:10px;margin-top:10px}.pvnav button{padding:9px 14px;font-size:.9rem}
+.dlrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+</style></head><body><header><div class="inner"><h1>📚 PDF para EPUB</h1><p>Converta livros preservando imagens e aparência das páginas, ou em texto ajustável — no celular ou notebook.</p></div></header><main class="wrap">
+
+<section class="panel"><h2>1. Escolha o PDF</h2><div class="drop" id="drop" role="button" tabindex="0"><strong>📄 Toque para selecionar ou arraste seu PDF</strong><span class="muted">O processamento acontece no seu dispositivo; o arquivo não é enviado a um servidor.</span></div><input type="file" id="file" accept="application/pdf,.pdf"><div id="fileinfo" class="fileinfo"><canvas id="thumb"></canvas><div id="fileinfoText"></div></div></section>
+
+<section class="panel"><h2>2. Configure o e-book</h2>
+<div class="settings">
+ <div><label for="title">Título do livro</label><input id="title" type="text" placeholder="Título do e-book"></div>
+ <div><label for="author">Autor</label><input id="author" type="text" placeholder="Autor (opcional)"></div>
+ <div><label for="mode">Tipo de EPUB</label><select id="mode" data-keep><option value="fixed" selected>Layout original — preserva imagens</option><option value="flow">Texto adaptável — fonte ajustável</option></select></div>
+ <div><label for="quality">Qualidade das imagens</label><select id="quality" data-keep><option value="1">Leve — leitura no celular</option><option value="1.5" selected>Equilibrada — recomendada</option><option value="2">Alta — arquivo maior</option></select></div>
+ <div><label for="format">Formato das imagens</label><select id="format" data-keep><option value="jpeg" selected>JPEG — menor arquivo</option><option value="png">PNG — sem perdas, maior arquivo</option></select></div>
+</div>
+<p class="note modehelp" id="modehelp"></p>
+
+<details class="adv" id="adv"><summary>⚙️ Configurações avançadas</summary>
+ <div class="settings advgrid">
+  <div><label for="lang">Idioma do livro</label><select id="lang" data-keep><option value="pt-BR">Português</option><option value="en">Inglês</option><option value="es">Espanhol</option><option value="fr">Francês</option><option value="it">Italiano</option><option value="de">Alemão</option></select></div>
+  <div><label>Intervalo de páginas</label><div class="range"><input type="number" id="pFrom" min="1" value="1"><span>até</span><input type="number" id="pTo" min="1" value="1"></div></div>
+  <div class="flowonly"><label for="split">Dividir capítulos</label><select id="split" data-keep><option value="auto">Automático (sumário do PDF ou títulos)</option><option value="headings">Pelos títulos do texto</option><option value="pages">A cada 10 páginas</option><option value="single">Um único arquivo</option></select></div>
+ </div>
+ <div class="checks">
+  <label><input type="checkbox" id="optCover" data-keep checked><span>Usar a 1ª página como capa do e-book</span></label>
+  <label><input type="checkbox" id="optGray" data-keep><span>Imagens em tons de cinza (ideal para Kindle/Kobo de tinta eletrônica — arquivo bem menor)</span></label>
+  <label class="flowonly"><input type="checkbox" id="optInline" data-keep checked><span>Extrair fotos e figuras que estão no meio do texto</span></label>
+  <label class="flowonly"><input type="checkbox" id="optImgPages" data-keep checked><span>Manter como imagem as páginas com pouco texto (gráficos, ilustrações, QR codes)</span></label>
+  <label class="flowonly"><input type="checkbox" id="optHeaders" data-keep checked><span>Remover cabeçalhos, rodapés e números de página</span></label>
+  <label class="flowonly"><input type="checkbox" id="optHyphen" data-keep checked><span>Juntar palavras hifenizadas no fim da linha</span></label>
+ </div>
+</details>
+
+<div class="actions"><button id="convert" disabled>Converter para EPUB</button><button id="cancel" class="danger hide" type="button">Cancelar</button></div>
+<div id="progressbox" class="hide"><p id="status" aria-live="polite"></p><progress id="progress" max="100" value="0"></progress><p class="muted" id="percent"></p></div>
+</section>
+
+<section class="panel hide" id="previewPanel"><h2>3. Prévia e ajustes</h2>
+ <div class="chips" id="chips"></div>
+ <p class="note" id="editHelp" style="margin-top:0"></p>
+ <div class="reader"><div class="toc" id="toc"></div><div>
+  <div class="editbar" id="editbar"></div>
+  <div class="blockbar hide" id="blockbar"><span id="blockinfo">Trecho selecionado</span><button type="button" class="secondary" id="bSplit">Começar capítulo aqui</button><button type="button" class="danger" id="bDel">Remover trecho</button><button type="button" class="secondary" id="bClose">✕</button></div>
+  <div class="pagepv" id="pv"></div>
+  <div class="pvnav"><button type="button" class="secondary" id="pvPrev">← Anterior</button><button type="button" class="secondary" id="pvNext">Próxima →</button></div>
+ </div></div>
+ <div class="dlrow"><a id="download" class="btn">⬇ Baixar EPUB</a><button id="share" type="button" class="secondary hide">📤 Enviar para app (Kindle, Kobo…)</button></div>
+ <div id="sizeWarn" class="warn hide"></div>
+</section>
+
+<section class="panel"><h2>Histórico neste dispositivo</h2><p class="muted">Somente nome, data, modo e tamanho são guardados. PDFs e EPUBs não são armazenados pelo aplicativo.</p><ol id="history" class="history"></ol><button id="clearhistory" class="smallbtn" type="button">Limpar histórico</button></section>
+<section class="panel"><h2>Como instalar</h2><p class="note"><strong>No notebook:</strong> abra o endereço do app (HTTPS) no Chrome ou Edge e use “Instalar aplicativo”. <strong>No Android:</strong> abra o mesmo endereço no Chrome e escolha “Instalar aplicativo”. Depois de instalado, o conversor aparece no menu <strong>Compartilhar</strong> do Android: compartilhe um PDF de qualquer app (Arquivos, Drive, WhatsApp, Gmail) e ele abre direto aqui.</p><p class="note">Para funcionar offline, abra o aplicativo conectado à internet uma vez. A instalação PWA e o cache offline exigem HTTPS ou localhost.</p><p class="muted" id="offlineStatus">Verificando suporte offline...</p></section>
+<section class="panel"><h2>Como usar</h2><p class="note">1. Selecione um PDF. 2. Escolha o tipo de EPUB e, se quiser, ajuste as configurações avançadas (elas ficam salvas para a próxima vez). 3. Clique em <strong>Converter para EPUB</strong>. 4. Confira a prévia, faça ajustes e baixe ou envie o arquivo.</p><p class="note"><strong>Kindle:</strong> use o app ou site “Send to Kindle” da Amazon (por e-mail o limite é 50 MB). <strong>Kobo e outros:</strong> copie pelo cabo USB. Alguns leitores não oferecem suporte completo a EPUB de layout fixo; nesses, prefira o modo Texto adaptável.</p><p class="note"><strong>Importante:</strong> a primeira abertura precisa de internet para carregar as bibliotecas PDF.js e JSZip. PDFs grandes podem exigir bastante memória, especialmente no celular.</p></section>
+<footer>Conversor local • Seus PDFs permanecem no dispositivo</footer></main>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+(()=>{'use strict';
+const $=id=>document.getElementById(id), drop=$('drop'), input=$('file'), convert=$('convert');
+let selected=null, pdf=null, downloadURL=null, previewURLs=[], cancelled=false, book=null, opts=null, epubBlob=null;
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
+const pad=n=>String(n).padStart(4,'0');
+const clean=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').slice(0,70)||'livro';
+const tick=()=>new Promise(r=>setTimeout(r,0));
+const MB=b=>(b/1048576).toFixed(1);
+
+/* ---------- configurações salvas ---------- */
+const settingsKey='epub_settings_v1';
+function loadSettings(){try{const s=JSON.parse(localStorage.getItem(settingsKey)||'{}');
+  document.querySelectorAll('[data-keep]').forEach(el=>{if(!(el.id in s))return;if(el.type==='checkbox')el.checked=!!s[el.id];else if([...el.options].some(o=>o.value===s[el.id]))el.value=s[el.id];});}catch(_){}}
+function saveSettings(){try{const s={};document.querySelectorAll('[data-keep]').forEach(el=>s[el.id]=el.type==='checkbox'?el.checked:el.value);localStorage.setItem(settingsKey,JSON.stringify(s));}catch(_){}}
+loadSettings();document.querySelectorAll('[data-keep]').forEach(el=>el.addEventListener('change',saveSettings));
+
+/* ---------- seleção do arquivo ---------- */
+async function pick(f){
+  if(!f)return;
+  if(!/\.pdf$/i.test(f.name)&&f.type!=='application/pdf'){alert('Selecione um arquivo PDF.');return;}
+  selected=f; resetOutput();
+  $('fileinfoText').textContent=`${f.name} — ${MB(f.size)} MB`;
+  $('title').value=f.name.replace(/\.pdf$/i,'').replace(/^[0-9a-f]{6,}-/i,'').replace(/[_-]/g,' ');
+  $('author').value='';
+  convert.disabled=true;
+  if(!window.pdfjsLib){alert('Bibliotecas não carregadas. Conecte-se à internet e recarregue a página.');return;}
+  try{
+    if(pdf){try{await pdf.destroy()}catch(_){}}
+    pdfjsLib.GlobalWorkerOptions.workerSrc='https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    pdf=await pdfjsLib.getDocument({data:new Uint8Array(await f.arrayBuffer())}).promise;
+  }catch(e){
+    pdf=null;$('fileinfoText').textContent=e&&e.name==='PasswordException'?'Este PDF é protegido por senha.':'Não foi possível abrir este PDF.';return;
+  }
+  $('fileinfoText').textContent=`${f.name} — ${pdf.numPages} páginas — ${MB(f.size)} MB`;
+  $('pFrom').value=1;$('pFrom').max=pdf.numPages;$('pTo').value=pdf.numPages;$('pTo').max=pdf.numPages;
+  try{const info=(await pdf.getMetadata()).info||{};
+    if(info.Title&&!/^untitled|^microsoft|\.(docx?|indd|pdf)$/i.test(info.Title.trim()))$('title').value=info.Title.trim();
+    if(info.Author)$('author').value=info.Author.trim();}catch(_){}
+  try{const p1=await pdf.getPage(1),v=p1.getViewport({scale:140/p1.getViewport({scale:1}).width}),c=$('thumb');
+    c.width=v.width;c.height=v.height;await p1.render({canvasContext:c.getContext('2d'),viewport:v}).promise;}catch(_){}
+  convert.disabled=false;
+}
+drop.onclick=()=>input.click();drop.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();input.click()}};input.onchange=()=>pick(input.files[0]);drop.ondragover=e=>{e.preventDefault();drop.classList.add('over')};drop.ondragleave=()=>drop.classList.remove('over');drop.ondrop=e=>{e.preventDefault();drop.classList.remove('over');pick(e.dataTransfer.files[0])};
+
+/* PDF recebido pelo menu Compartilhar do Android (share target) */
+async function receiveShared(){
+  if(!/[?&]shared=1/.test(location.search)||!('caches' in window))return;
+  history.replaceState(null,'',location.pathname);
+  try{const c=await caches.open('shared-files'),key=new URL('shared-pdf',location.href).href,r=await c.match(key);
+    if(!r)return;const blob=await r.blob(),name=decodeURIComponent(r.headers.get('X-File-Name')||'compartilhado.pdf');
+    await c.delete(key);pick(new File([blob],name,{type:'application/pdf'}));}catch(e){console.error(e);}
+}
+receiveShared();
+
+function status(s,p){if(cancelled)throw new Error('__cancel');$('progressbox').classList.remove('hide');$('status').textContent=s;$('progress').value=p;$('percent').textContent=Math.round(p)+'%';}
+function resetOutput(){
+  $('previewPanel').classList.add('hide');
+  if(downloadURL){URL.revokeObjectURL(downloadURL);downloadURL=null;}
+  previewURLs.forEach(u=>URL.revokeObjectURL(u));previewURLs=[];book=null;epubBlob=null;
+}
+
+/* ---------- histórico ---------- */
+const historyKey='epub_history_v2';
+function renderHistory(){let h=[];try{h=JSON.parse(localStorage.getItem(historyKey)||'[]')}catch(e){};$('history').innerHTML='';if(!h.length){const li=document.createElement('li');li.textContent='Nenhuma conversão registrada.';$('history').append(li)}for(const item of h){const li=document.createElement('li');li.textContent=`${item.date} — ${item.title} (${item.mode}, ${item.pages} páginas, ${item.size} MB)`;$('history').append(li)}}
+$('clearhistory').onclick=()=>{try{localStorage.removeItem(historyKey)}catch(_){}renderHistory()};renderHistory();
+
+/* ---------- modo ---------- */
+function updateMode(){
+  const fixed=$('mode').value==='fixed';
+  $('modehelp').innerHTML=fixed
+    ?'Modo de conversão: <strong>EPUB de layout fixo</strong>. Cada página é preservada como imagem, incluindo gráficos, tabelas e QR codes. O texto não será redimensionável ou selecionável.'
+    :'Modo de conversão: <strong>Texto adaptável</strong>. O texto se ajusta à tela e você muda fonte e tamanho no leitor. Capítulos vêm do sumário do PDF (ou dos títulos), e fotos e figuras entram no lugar onde aparecem. PDFs digitalizados (sem texto) devem usar o layout original.';
+  document.querySelectorAll('.flowonly').forEach(el=>el.classList.toggle('hide',fixed));
+}
+$('mode').addEventListener('change',updateMode);updateMode();
+
+if('serviceWorker' in navigator && location.protocol!=='file:'){navigator.serviceWorker.register('./sw.js').then(()=>{$('offlineStatus').textContent='PWA ativado. Abra uma vez online para armazenar as bibliotecas.'}).catch(e=>{$('offlineStatus').textContent='Offline indisponível: '+e.message})}else{$('offlineStatus').textContent='Para instalação e offline, publique esta pasta em HTTPS ou use localhost.'}
+
+/* ---------- imagens ---------- */
+function toGray(ctx,w,h){const d=ctx.getImageData(0,0,w,h),a=d.data;for(let i=0;i<a.length;i+=4){const g=a[i]*.299+a[i+1]*.587+a[i+2]*.114;a[i]=a[i+1]=a[i+2]=g;}ctx.putImageData(d,0,0);}
+function canvasBlob(canvas,o){
+  if(o.gray)toGray(canvas.getContext('2d'),canvas.width,canvas.height);
+  return new Promise((res,rej)=>canvas.toBlob(b=>b?res(b):rej(new Error('Falha ao gerar imagem')),o.mime,0.88));
+}
+async function renderCanvas(page,scale){
+  const view=page.getViewport({scale}),canvas=document.createElement('canvas');
+  canvas.width=Math.max(1,Math.round(view.width));canvas.height=Math.max(1,Math.round(view.height));
+  const ctx=canvas.getContext('2d',{alpha:false,willReadFrequently:true});ctx.fillStyle='#fff';ctx.fillRect(0,0,canvas.width,canvas.height);
+  await page.render({canvasContext:ctx,viewport:view}).promise;return canvas;
+}
+async function renderPage(page,scale,o){
+  const canvas=await renderCanvas(page,scale),blob=await canvasBlob(canvas,o),r={blob,w:canvas.width,h:canvas.height};
+  canvas.width=canvas.height=0;return r;
+}
+async function cropImages(page,boxes,o){
+  const scale=Math.max(2,o.quality*1.5),canvas=await renderCanvas(page,scale),out=[];
+  for(const b of boxes){
+    const x=Math.max(0,Math.floor(b.x0*scale)),y=Math.max(0,Math.floor(b.y0*scale));
+    const w=Math.min(canvas.width-x,Math.ceil((b.x1-b.x0)*scale)),h=Math.min(canvas.height-y,Math.ceil((b.y1-b.y0)*scale));
+    if(w<8||h<8)continue;
+    const c=document.createElement('canvas');c.width=w;c.height=h;c.getContext('2d',{willReadFrequently:true}).drawImage(canvas,x,y,w,h,0,0,w,h);
+    out.push({box:b,blob:await canvasBlob(c,o),w,h});c.width=c.height=0;
+  }
+  canvas.width=canvas.height=0;return out;
+}
+
+/* Posição das imagens desenhadas na página (segue a matriz de transformação do PDF) */
+const mul=(m,n)=>[m[0]*n[0]+m[2]*n[1],m[1]*n[0]+m[3]*n[1],m[0]*n[2]+m[2]*n[3],m[1]*n[2]+m[3]*n[3],m[0]*n[4]+m[2]*n[5]+m[4],m[1]*n[4]+m[3]*n[5]+m[5]];
+async function pageGraphics(page,vp){
+  const res={boxes:[],paths:0};
+  try{
+    const ops=await page.getOperatorList(),O=pdfjsLib.OPS;
+    const IMG=new Set([O.paintImageXObject,O.paintInlineImageXObject,O.paintImageMaskXObject,O.paintJpegXObject,O.paintImageXObjectRepeat].filter(v=>v!==undefined));
+    let ctm=[1,0,0,1,0,0];const st=[];
+    for(let i=0;i<ops.fnArray.length;i++){
+      const f=ops.fnArray[i],a=ops.argsArray[i];
+      if(f===O.save)st.push(ctm);
+      else if(f===O.restore)ctm=st.pop()||ctm;
+      else if(f===O.transform)ctm=mul(ctm,a);
+      else if(f===O.paintFormXObjectBegin){st.push(ctm);if(a&&Array.isArray(a[0])&&a[0].length===6)ctm=mul(ctm,a[0]);}
+      else if(f===O.paintFormXObjectEnd)ctm=st.pop()||ctm;
+      else if(f===O.constructPath)res.paths++;
+      else if(IMG.has(f)){
+        const pts=[[0,0],[1,0],[0,1],[1,1]].map(([x,y])=>vp.convertToViewportPoint(ctm[0]*x+ctm[2]*y+ctm[4],ctm[1]*x+ctm[3]*y+ctm[5]));
+        const xs=pts.map(p=>p[0]),ys=pts.map(p=>p[1]);
+        res.boxes.push({x0:Math.max(0,Math.min(...xs)),y0:Math.max(0,Math.min(...ys)),x1:Math.min(vp.width,Math.max(...xs)),y1:Math.min(vp.height,Math.max(...ys))});
+      }
+    }
+  }catch(e){}
+  return res;
+}
+const boxKey=b=>[b.x0,b.y0,b.x1,b.y1].map(v=>Math.round(v/6)).join(',');
+function mergeBoxes(bs){
+  bs=bs.map(b=>({...b}));let changed=true;
+  while(changed){changed=false;
+    for(let i=0;i<bs.length;i++)for(let j=i+1;j<bs.length;j++){const a=bs[i],b=bs[j];
+      if(a.x0<=b.x1+4&&b.x0<=a.x1+4&&a.y0<=b.y1+4&&b.y0<=a.y1+4){a.x0=Math.min(a.x0,b.x0);a.y0=Math.min(a.y0,b.y0);a.x1=Math.max(a.x1,b.x1);a.y1=Math.max(a.y1,b.y1);bs.splice(j,1);changed=true;j--;}}}
+  return bs;
+}
+
+/* ---------- extração de texto ---------- */
+const LIG={'ﬀ':'ff','ﬁ':'fi','ﬂ':'fl','ﬃ':'ffi','ﬄ':'ffl','ﬅ':'st','ﬆ':'st'};
+const cleanStr=s=>s.replace(/[ﬀ-ﬆ]/g,m=>LIG[m]).replace(/­/g,'').replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F￾￿]/g,'').replace(/ /g,' ');
+const normKey=s=>s.toLowerCase().replace(/\d+/g,'#').replace(/\s+/g,' ').trim();
+const fold=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().replace(/[^a-z0-9]+/g,'');
+const isPageNum=s=>/^(p(á|a)g(ina)?\.?\s*)?[\divxlc]{1,6}(\s*(\/|de|of)\s*\d+)?$/i.test(s.trim());
+const endsSentence=s=>/[.!?:;…"”»)\]]$/.test(s);
+const isBullet=s=>/^([•●▪■◦○►✓✔\-–—]|\d{1,2}[.)]|[a-z][)])\s+/.test(s);
+const isChapLabel=s=>s.length<30&&/^(cap[ií]tulo|parte|chapter|part|se[çc][ãa]o|li[çc][ãa]o|unidade|m[óo]dulo)\s+([\divxlc]+|[a-zà-ú]{2,8})$/i.test(s.trim());
+const titleCase=s=>/[a-zà-ÿ]/.test(s)?s:s.charAt(0)+s.slice(1).toLowerCase();
+const isLeader=s=>/\.{4,}\s*\d+\s*$|\s{2,}\d+$/.test(s);
+function joinText(a,b,hyphen){if(hyphen&&/[a-zà-ÿ]-$/i.test(a)&&/^[a-zà-ÿ]/.test(b))return a.slice(0,-1)+b;return a+' '+b;}
+
+async function pageLines(page,vp){
+  const tc=await page.getTextContent(),items=[];
+  for(const it of tc.items){
+    if(typeof it.str!=='string')continue;const s=cleanStr(it.str);if(!s.trim())continue;
+    const t=it.transform,size=Math.hypot(t[2],t[3])||it.height||10,[x,y]=vp.convertToViewportPoint(t[4],t[5]);
+    items.push({s,x,y,w:it.width,size});
+  }
+  items.sort((a,b)=>Math.abs(a.y-b.y)<Math.min(a.size,b.size)*0.45?a.x-b.x:a.y-b.y);
+  const lines=[];
+  for(const it of items){
+    const L=lines[lines.length-1];
+    if(L&&Math.abs(L.y-it.y)<Math.min(L.size,it.size)*0.45&&it.x>=L.x1-it.size*0.6){
+      if(it.x-L.x1>it.size*0.18&&!/\s$/.test(L.text)&&!/^\s/.test(it.s))L.text+=' ';
+      L.text+=it.s;L.x1=Math.max(L.x1,it.x+it.w);L.chars.push([it.size,it.s.length]);
+    }else lines.push({text:it.s,x:it.x,x1:it.x+it.w,y:it.y,size:it.size,chars:[[it.size,it.s.length]]});
+  }
+  for(const L of lines){const m={};for(const[s,n]of L.chars){const k=Math.round(s*2)/2;m[k]=(m[k]||0)+n;}
+    L.size=+Object.keys(m).sort((a,b)=>m[b]-m[a])[0];L.text=L.text.replace(/\s+/g,' ').trim();delete L.chars;}
+  return lines.filter(l=>l.text);
+}
+
+/* Sumário embutido no PDF (outline) */
+async function outlineMarks(o){
+  let ol=null;try{ol=await pdf.getOutline();}catch(_){}
+  if(!ol||!ol.length)return null;
+  const good=t=>typeof t==='string'&&/[A-Za-zÀ-ÿ]{3}/.test(t)&&!/^_?[a-z0-9]{8,}$/i.test(t.trim());
+  let level=ol;
+  const goodTop=level.filter(x=>good(x.title));
+  if(goodTop.length===1&&goodTop[0].items&&goodTop[0].items.filter(x=>good(x.title)).length>=2)level=goodTop[0].items;
+  // sumário cheio de marcadores internos sem nome (comum em PDFs do InDesign) não é confiável
+  if(level.filter(x=>good(x.title)).length<level.length*0.6)return null;
+  const marks=[];
+  for(const x of level){
+    if(!good(x.title))continue;
+    try{let d=x.dest;if(typeof d==='string')d=await pdf.getDestination(d);if(!Array.isArray(d))continue;
+      const page=typeof d[0]==='number'?d[0]+1:(await pdf.getPageIndex(d[0]))+1;
+      if(page>=o.from&&page<=o.to)marks.push({title:x.title.replace(/\s+/g,' ').trim(),page});}catch(_){}
+  }
+  marks.sort((a,b)=>a.page-b.page);
+  return marks.length>=2?marks:null;
+}
+
+async function convertFlow(o){
+  const pages=[],total=o.to-o.from+1;
+  for(let n=o.from;n<=o.to;n++){
+    const page=await pdf.getPage(n),vp=page.getViewport({scale:1});
+    const d={n,h:vp.height,w:vp.width,lines:await pageLines(page,vp)};
+    d.chars=d.lines.reduce((a,l)=>a+l.text.length,0);
+    d.g=(o.inline||o.imgPages)?await pageGraphics(page,vp):{boxes:[],paths:0};
+    pages.push(d);page.cleanup();
+    if(n%3===0||n===o.to){status(`Analisando a página ${n} de ${o.to}...`,(n-o.from+1)/total*40);await tick();}
+  }
+  // cabeçalhos e rodapés repetidos
+  if(o.headers){
+    const count={};
+    for(const p of pages){const seen=new Set();for(const l of p.lines){if(l.y<p.h*.1||l.y>p.h*.9){const k=normKey(l.text);if(seen.has(k))continue;seen.add(k);count[k]=(count[k]||0)+1;}}}
+    const minRep=Math.max(3,Math.floor(pages.length*.12));
+    for(const p of pages)p.lines=p.lines.filter(l=>{if(!(l.y<p.h*.1||l.y>p.h*.9))return true;if(isPageNum(l.text))return false;return(count[normKey(l.text)]||0)<minRep;});
+  }
+  // imagens relevantes: ignora ícones pequenos, fundos de página inteira e enfeites que se repetem
+  const rep={};
+  for(const p of pages){const seen=new Set();for(const b of p.g.boxes){const k=boxKey(b);if(!seen.has(k)){seen.add(k);rep[k]=(rep[k]||0)+1;}}}
+  const repMin=Math.max(3,Math.floor(pages.length*.2));
+  for(const p of pages){
+    p.figs=mergeBoxes(p.g.boxes.filter(b=>{const w=b.x1-b.x0,h=b.y1-b.y0;
+      return w>=p.w*.12&&h>=p.h*.05&&w*h<p.w*p.h*.85&&(rep[boxKey(b)]||0)<repMin;}));
+  }
+  const hist={};for(const p of pages)for(const l of p.lines)hist[l.size]=(hist[l.size]||0)+l.text.length;
+  const body=+(Object.keys(hist).sort((a,b)=>hist[b]-hist[a])[0]||10);
+
+  const blocks=[],images=[];let coverImg=null;
+  if(o.cover){const page=await pdf.getPage(o.from);coverImg=await renderPage(page,Math.max(o.quality,1.5),o);coverImg.name='cover.'+o.ext;page.cleanup();}
+
+  for(let i=0;i<pages.length;i++){
+    const p=pages[i];
+    if(i%2===0){status(`Montando o livro: página ${p.n} de ${o.to}...`,40+(i+1)/pages.length*45);await tick();}
+    if(o.cover&&i===0&&p.chars<400)continue;
+    // página quase sem texto e com gráficos -> página inteira como imagem
+    if(o.imgPages&&p.chars<120&&(p.figs.length||p.g.paths>40)){
+      const page=await pdf.getPage(p.n),r=await renderPage(page,o.quality,o),name=`p${pad(p.n)}.${o.ext}`;
+      images.push({name,...r,page:p.n});blocks.push({t:'img',name,page:p.n});page.cleanup();continue;
+    }
+    // fotos e figuras dentro de páginas de texto
+    let seq=p.lines;
+    if(o.inline&&p.figs.length){
+      const page=await pdf.getPage(p.n),crops=await cropImages(page,p.figs,o);page.cleanup();
+      const inside=l=>p.figs.some(b=>l.x>=b.x0-2&&l.x1<=b.x1+2&&l.y>=b.y0-2&&l.y<=b.y1+l.size);
+      seq=p.lines.filter(l=>!inside(l));
+      crops.forEach((c,k)=>{const name=`p${pad(p.n)}_${k+1}.${o.ext}`;images.push({name,blob:c.blob,w:c.w,h:c.h,page:p.n});seq.push({img:name,y:c.box.y0,page:p.n});});
+      seq.sort((a,b)=>a.y-b.y);
+    }
+    if(!seq.length)continue;
+
+    const bodyLines=seq.filter(l=>!l.img&&l.size<body*1.2),gaps=[];
+    for(let k=1;k<bodyLines.length;k++){const g=bodyLines[k].y-bodyLines[k-1].y;if(g>0&&g<body*3)gaps.push(g);}
+    gaps.sort((a,b)=>a-b);
+    const mGap=gaps.length?gaps[Math.floor(gaps.length/2)]:body*1.3;
+    const left=bodyLines.length?Math.min(...bodyLines.map(l=>l.x)):0,right=bodyLines.length?Math.max(...bodyLines.map(l=>l.x1)):p.w;
+    let cur=null,prev=null,first=true;
+    const pushBlock=b=>{
+      if(first&&b.t==='p'&&blocks.length){const last=blocks[blocks.length-1];
+        if(last.t==='p'&&!endsSentence(last.text)&&/^[a-zà-ÿ(]/.test(b.text)){last.text=joinText(last.text,b.text,o.hyphen);first=false;return;}}
+      first=false;blocks.push(b);
+    };
+    const flush=()=>{if(cur){pushBlock(cur);cur=null;}};
+    for(const l of seq){
+      if(l.img){flush();first=false;blocks.push({t:'img',name:l.img,page:p.n});prev=null;continue;}
+      const ratio=l.size/body,label=isChapLabel(l.text);
+      const heading=label||(ratio>=1.2&&l.text.length<=160&&!isPageNum(l.text));
+      if(heading){
+        const lvl=label||ratio>=1.6?1:2;
+        if(cur&&cur.t==='h'&&prev&&cur.label&&!label&&l.y-prev.y<Math.max(l.size,prev.size)*4){cur.text=titleCase(cur.text)+' – '+l.text;cur.label=false;cur.size=l.size;cur.lvl=lvl;}
+        else if(cur&&cur.t==='h'&&prev&&!cur.label&&!label&&Math.abs(cur.size-l.size)<=body*.15&&l.y-prev.y<l.size*2.2)cur.text=joinText(cur.text,l.text,o.hyphen);
+        else{flush();cur={t:'h',lvl,size:l.size,text:l.text,page:p.n,label};}
+      }else{
+        const li=isBullet(l.text);let brk=!cur||cur.t!=='p';
+        if(!brk&&prev){const gap=l.y-prev.y;
+          if(gap>mGap*1.45||gap<-body)brk=true;
+          else if(endsSentence(prev.text)&&prev.x1<right-body*2.2)brk=true;
+          else if(endsSentence(prev.text)&&l.x>left+body*.8)brk=true;
+          else if(li&&(endsSentence(prev.text)||!/^[—–-]/.test(l.text)))brk=true;
+          else if(isLeader(prev.text)||isLeader(l.text))brk=true;
+          else if(Math.abs(l.size-prev.size)>body*.15)brk=true;}
+        if(brk){flush();cur={t:'p',text:l.text,li,page:p.n};}else cur.text=joinText(cur.text,l.text,o.hyphen);
+      }
+      prev=l;
+    }
+    flush();
+  }
+  blocks.forEach(b=>{delete b.size;delete b.label;});
+  const marks=o.split==='auto'?await outlineMarks(o):null;
+  return{mode:'flow',chapters:marks?splitByOutline(blocks,marks):splitChapters(blocks,o),images,coverImg,source:marks?'outline':o.split};
+}
+
+function splitByOutline(blocks,marks){
+  const starts=[];let from=0;
+  for(const m of marks){
+    const key=fold(m.title).slice(0,14);let idx=-1;
+    for(let i=from;i<blocks.length;i++){const b=blocks[i];if(b.page>m.page)break;
+      if(b.page===m.page&&b.t!=='img'&&key&&(fold(b.text).includes(key)||key.includes(fold(b.text).slice(0,14))&&fold(b.text).length>3)){idx=i;break;}}
+    if(idx<0){idx=blocks.findIndex((b,i)=>i>=from&&b.page>=m.page);}
+    if(idx<0)continue;
+    // se a linha anterior for "Capítulo N", ela começa o capítulo junto
+    if(idx>from&&blocks[idx-1].t!=='img'&&isChapLabel(blocks[idx-1].text.split(' – ')[0])&&blocks[idx-1].page===m.page)idx--;
+    starts.push({idx,title:m.title});from=idx+1;
+  }
+  const chapters=[];
+  if(!starts.length||starts[0].idx>0)chapters.push({title:'Início',blocks:blocks.slice(0,starts.length?starts[0].idx:blocks.length)});
+  starts.forEach((s,k)=>chapters.push({title:s.title.length>90?s.title.slice(0,87)+'…':s.title,blocks:blocks.slice(s.idx,k+1<starts.length?starts[k+1].idx:blocks.length)}));
+  return chapters.filter(c=>c.blocks.length);
+}
+
+function splitChapters(blocks,o){
+  const chapters=[],newCh=t=>{const c={title:t,blocks:[]};chapters.push(c);return c;};
+  if(o.split==='single'){newCh(o.title).blocks=blocks;return chapters;}
+  if(o.split==='pages'){let c=null,start=0;for(const b of blocks){if(!c||b.page-start>=10){start=b.page;c=newCh(`Páginas ${b.page}–${Math.min(b.page+9,o.to)}`);}c.blocks.push(b);}return chapters;}
+  const h1=blocks.filter(b=>b.t==='h'&&b.lvl===1).length,h2=blocks.filter(b=>b.t==='h'&&b.lvl===2).length;
+  const lvl=h1>=2?1:(h2>=2?2:0);
+  if(!lvl)return splitChapters(blocks,{...o,split:'pages'});
+  let c=null;
+  for(const b of blocks){
+    if(b.t==='h'&&b.lvl<=lvl){
+      if(c&&c.blocks.length<3&&c.blocks.every(x=>x.t==='h')){c.title+=' — '+b.text;c.blocks.push(b);continue;}
+      c=newCh(b.text);
+    }else if(!c)c=newCh(b.t==='img'?'Abertura':'Início');
+    c.blocks.push(b);
+  }
+  return chapters.map(ch=>({...ch,title:ch.title.length>90?ch.title.slice(0,87)+'…':ch.title}));
+}
+
+async function convertFixed(o){
+  const images=[],total=o.to-o.from+1;
+  for(let n=o.from;n<=o.to;n++){
+    status(`Renderizando página ${n} de ${o.to}...`,(n-o.from)/total*85);
+    const page=await pdf.getPage(n),r=await renderPage(page,o.quality,o);
+    images.push({name:`p${pad(n)}.${o.ext}`,...r,page:n});page.cleanup();
+    if(n%3===0)await tick();
+  }
+  const marks=await outlineMarks(o);
+  return{mode:'fixed',images,coverImg:o.cover?images[0]:null,chapters:[],marks:marks||[]};
+}
+
+/* ---------- montagem do EPUB ---------- */
+const xmlHeader='<?xml version="1.0" encoding="UTF-8"?>\n';
+const CSS=`body{margin:0 4%;line-height:1.5;font-family:serif}
+h1{font-size:1.6em;line-height:1.25;margin:1.2em 0 .9em;page-break-after:avoid}
+h2{font-size:1.25em;line-height:1.3;margin:1.3em 0 .6em;page-break-after:avoid}
+p{margin:0 0 .45em;text-indent:1.2em;text-align:justify}
+p.li{text-indent:0;margin-left:.6em}
+div.fig{text-align:center;margin:1em 0;page-break-inside:avoid}
+div.fig img{max-width:100%;max-height:95vh}
+div.cover{margin:0;padding:0;text-align:center}
+div.cover img{max-width:100%;max-height:100vh}`;
+function blocksHtml(blocks,src,editable){
+  return blocks.map((b,i)=>{const d=editable?` data-b="${i}"`:'';
+    return b.t==='h'?`<h${b.lvl}${d}>${esc(b.text)}</h${b.lvl}>`
+    :b.t==='img'?`<div class="fig"${d}><img src="${src(b.name)}" alt="Imagem da página ${b.page}"/></div>`
+    :`<p${b.li?' class="li"':''}${d}>${esc(b.text)}</p>`;}).join('\n');
+}
+function xhtml(title,body,lang,head=''){
+  return xmlHeader+`<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:epub="http://www.idpf.org/2007/ops" lang="${lang}" xml:lang="${lang}">
+<head><meta charset="utf-8"/><title>${esc(title)}</title>${head}</head>
+<body>
+${body}
+</body>
+</html>`;
+}
+
+async function buildEpub(r,o,progressCb){
+  const zip=new JSZip(),uid='urn:uuid:'+(crypto.randomUUID?crypto.randomUUID():Date.now()+'-epub'),date=new Date().toISOString().replace(/\.\d{3}Z$/,'Z');
+  zip.file('mimetype','application/epub+zip',{compression:'STORE'});
+  zip.file('META-INF/container.xml',xmlHeader+'<container version="1.0" xmlns="urn:oasis:names:tc:opendocument:xmlns:container"><rootfiles><rootfile full-path="OEBPS/package.opf" media-type="application/oebps-package+xml"/></rootfiles></container>');
+  const oebps=zip.folder('OEBPS'),manifest=[],spine=[],toc=[],fixed=r.mode==='fixed';
+  manifest.push('<item id="nav" href="nav.xhtml" media-type="application/xhtml+xml" properties="nav"/>','<item id="ncx" href="toc.ncx" media-type="application/x-dtbncx+xml"/>');
+  let coverMeta='';
+
+  if(fixed){
+    const markAt={};for(const m of r.marks)if(!markAt[m.page])markAt[m.page]=m.title;
+    r.images.forEach((im,i)=>{
+      oebps.file(`images/${im.name}`,im.blob);
+      const f=`pages/p${pad(im.page)}.xhtml`;
+      oebps.file(f,xhtml(`Página ${im.page}`,`<img src="../images/${im.name}" alt="Página ${im.page} do livro" style="display:block;width:${im.w}px;height:${im.h}px"/>`,o.lang,
+        `<meta name="viewport" content="width=${im.w},height=${im.h}"/><style>html,body{margin:0;padding:0;width:${im.w}px;height:${im.h}px}</style>`));
+      const cover=r.coverImg===im;
+      manifest.push(`<item id="img${i}" href="images/${im.name}" media-type="${o.mime}"${cover?' properties="cover-image"':''}/>`,`<item id="pg${i}" href="${f}" media-type="application/xhtml+xml"/>`);
+      if(cover)coverMeta=`<meta name="cover" content="img${i}"/>`;
+      spine.push(`<itemref idref="pg${i}"/>`);
+      if(r.marks.length){if(i===0&&!markAt[im.page])toc.push({title:'Início',href:f});if(markAt[im.page])toc.push({title:markAt[im.page],href:f});}
+      else toc.push({title:`Página ${im.page}`,href:f});
+    });
+  }else{
+    oebps.file('style.css',CSS);manifest.push('<item id="css" href="style.css" media-type="text/css"/>');
+    const link='<link rel="stylesheet" type="text/css" href="../style.css"/>';
+    if(r.coverImg){
+      oebps.file(`images/${r.coverImg.name}`,r.coverImg.blob);
+      manifest.push(`<item id="cover-image" href="images/${r.coverImg.name}" media-type="${o.mime}" properties="cover-image"/>`,'<item id="cover" href="pages/cover.xhtml" media-type="application/xhtml+xml"/>');
+      oebps.file('pages/cover.xhtml',xhtml('Capa',`<div class="cover"><img src="../images/${r.coverImg.name}" alt="Capa"/></div>`,o.lang,link));
+      coverMeta='<meta name="cover" content="cover-image"/>';spine.push('<itemref idref="cover"/>');
+    }
+    const used=new Set();r.chapters.forEach(ch=>ch.blocks.forEach(b=>{if(b.t==='img')used.add(b.name);}));
+    r.images.forEach((im,k)=>{if(!used.has(im.name))return;oebps.file(`images/${im.name}`,im.blob);manifest.push(`<item id="im${k}" href="images/${im.name}" media-type="${o.mime}"/>`);});
+    r.chapters.forEach((ch,i)=>{
+      const f=`pages/cap${String(i+1).padStart(3,'0')}.xhtml`;
+      oebps.file(f,xhtml(ch.title,blocksHtml(ch.blocks,n=>'../images/'+n),o.lang,link));
+      manifest.push(`<item id="c${i}" href="${f}" media-type="application/xhtml+xml"/>`);spine.push(`<itemref idref="c${i}"/>`);toc.push({title:ch.title||'Sem título',href:f});
+    });
+  }
+  if(!toc.length)toc.push({title:o.title,href:'nav.xhtml'});
+
+  oebps.file('nav.xhtml',xhtml('Sumário',`<nav epub:type="toc" id="toc"><h1>Sumário</h1><ol>\n${toc.map(t=>`<li><a href="${t.href}">${esc(t.title)}</a></li>`).join('\n')}\n</ol></nav>`,o.lang));
+  oebps.file('toc.ncx',xmlHeader+`<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1"><head><meta name="dtb:uid" content="${esc(uid)}"/><meta name="dtb:depth" content="1"/><meta name="dtb:totalPageCount" content="0"/><meta name="dtb:maxPageNumber" content="0"/></head><docTitle><text>${esc(o.title)}</text></docTitle><navMap>
+${toc.map((t,i)=>`<navPoint id="n${i+1}" playOrder="${i+1}"><navLabel><text>${esc(t.title)}</text></navLabel><content src="${t.href}"/></navPoint>`).join('\n')}
+</navMap></ncx>`);
+  const fxl=fixed?'<meta property="rendition:layout">pre-paginated</meta><meta property="rendition:orientation">auto</meta><meta property="rendition:spread">none</meta>':'';
+  oebps.file('package.opf',xmlHeader+`<package xmlns="http://www.idpf.org/2007/opf" version="3.0" unique-identifier="bookid" xml:lang="${o.lang}"${fixed?' prefix="rendition: http://www.idpf.org/vocab/rendition/#"':''}><metadata xmlns:dc="http://purl.org/dc/elements/1.1/"><dc:identifier id="bookid">${esc(uid)}</dc:identifier><dc:title>${esc(o.title)}</dc:title><dc:creator>${esc(o.author)}</dc:creator><dc:language>${o.lang}</dc:language><meta property="dcterms:modified">${date}</meta>${coverMeta}${fxl}</metadata><manifest>
+${manifest.join('\n')}
+</manifest><spine toc="ncx" page-progression-direction="ltr">
+${spine.join('\n')}
+</spine></package>`);
+  return zip.generateAsync({type:'blob',mimeType:'application/epub+zip',compression:'DEFLATE',compressionOptions:{level:6},streamFiles:true},progressCb);
+}
+
+/* ---------- arquivo final: baixar e compartilhar ---------- */
+function fileName(){return clean(opts.title)+'.epub';}
+function setOutput(blob){
+  epubBlob=blob;
+  if(downloadURL)URL.revokeObjectURL(downloadURL);
+  downloadURL=URL.createObjectURL(blob);
+  const a=$('download');a.href=downloadURL;a.setAttribute('download',fileName());a.classList.remove('busy');a.textContent=`⬇ Baixar EPUB (${MB(blob.size)} MB)`;
+  let canShare=false;
+  try{canShare=!!(navigator.canShare&&navigator.canShare({files:[new File([blob],fileName(),{type:'application/epub+zip'})]}));}catch(_){}
+  $('share').classList.toggle('hide',!canShare);
+  const w=$('sizeWarn');
+  if(blob.size>50*1048576){w.innerHTML=`<strong>Arquivo com ${MB(blob.size)} MB.</strong> O Send to Kindle por e-mail aceita até 50 MB: use o app ou o site do Send to Kindle, ou converta de novo com qualidade “Leve”${opts.mode==='fixed'?' ou no modo Texto adaptável':''} e imagens em tons de cinza.`;w.classList.remove('hide');}
+  else w.classList.add('hide');
+  renderChips();
+}
+$('share').onclick=async()=>{
+  if(!epubBlob)return;
+  try{await navigator.share({files:[new File([epubBlob],fileName(),{type:'application/epub+zip'})],title:opts.title});}
+  catch(e){if(e.name!=='AbortError')alert('Não foi possível compartilhar: '+e.message+'. Use o botão Baixar.');}
+};
+let rebuildTimer=null,rebuildRun=0;
+function scheduleRebuild(){
+  const a=$('download');a.classList.add('busy');a.textContent='Atualizando EPUB…';
+  clearTimeout(rebuildTimer);
+  rebuildTimer=setTimeout(async()=>{const run=++rebuildRun;try{const b=await buildEpub(book,opts);if(run===rebuildRun)setOutput(b);}catch(e){console.error(e);a.textContent='Erro ao atualizar';}},350);
+}
+
+/* ---------- prévia e editor ---------- */
+let imgUrl={},cur=0,selBlock=-1;
+function srcOf(name){
+  if(!imgUrl[name]){const im=book.images.find(x=>x.name===name)||(book.coverImg&&book.coverImg.name===name?book.coverImg:null);
+    if(!im)return'';imgUrl[name]=URL.createObjectURL(im.blob);previewURLs.push(imgUrl[name]);}
+  return imgUrl[name];
+}
+function entries(){
+  if(book.mode==='fixed')return book.images.map(im=>({kind:'page',im,title:'Página '+im.page}));
+  const e=book.chapters.map((ch,i)=>({kind:'ch',ch,i,title:ch.title||'Sem título'}));
+  if(book.coverImg)e.unshift({kind:'cover',title:'Capa'});
+  return e;
+}
+function renderChips(){
+  const chips=$('chips');chips.innerHTML='';
+  const chip=(t,alt)=>{const s=document.createElement('span');s.className='chip'+(alt?' alt':'');s.textContent=t;chips.append(s);};
+  if(epubBlob)chip(MB(epubBlob.size)+' MB');
+  if(book.mode==='flow'){
+    chip(book.chapters.length+(book.chapters.length===1?' capítulo':' capítulos'));
+    let words=0,figs=0;book.chapters.forEach(c=>c.blocks.forEach(b=>{if(b.t==='p')words+=b.text.split(/\s+/).length;else if(b.t==='img')figs++;}));
+    chip(words.toLocaleString('pt-BR')+' palavras');
+    if(figs)chip(figs+(figs===1?' imagem':' imagens'));
+    if(book.source==='outline')chip('Capítulos do sumário do PDF',true);
+  }else{
+    chip(book.images.length+' páginas');chip('Layout fixo');
+    if(book.marks.length)chip(book.marks.length+' capítulos no sumário',true);
+  }
+}
+function renderToc(){
+  const toc=$('toc');toc.innerHTML='';
+  entries().forEach((it,i)=>{const b=document.createElement('button');b.type='button';b.textContent=it.title;b.onclick=()=>go(i);if(i===cur)b.classList.add('on');toc.append(b);});
+}
+function go(i){
+  const es=entries();if(!es.length){$('pv').innerHTML='<p>Nada para mostrar.</p>';$('editbar').innerHTML='';return;}
+  cur=Math.max(0,Math.min(es.length-1,i));selBlock=-1;$('blockbar').classList.add('hide');
+  const it=es[cur],pv=$('pv'),bar=$('editbar');
+  pv.classList.toggle('editable',it.kind==='ch');bar.innerHTML='';
+  if(it.kind==='cover'){pv.innerHTML=`<img src="${srcOf(book.coverImg.name)}" alt="Capa">`;bar.innerHTML='<span class="muted">Capa do e-book</span>';}
+  else if(it.kind==='page'){
+    pv.innerHTML=`<img src="${srcOf(it.im.name)}" alt="">`;
+    const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Remover esta página';
+    del.onclick=()=>{if(book.images.length<2)return;const idx=book.images.indexOf(it.im);book.images.splice(idx,1);if(book.coverImg===it.im)book.coverImg=book.images[0]&&opts.cover?book.images[0]:null;changed(cur);};
+    bar.append(del);
+  }else{
+    pv.innerHTML=blocksHtml(it.ch.blocks,srcOf,true)||'<p class="muted">Capítulo vazio.</p>';
+    const inp=document.createElement('input');inp.type='text';inp.value=it.ch.title;inp.setAttribute('aria-label','Título do capítulo');
+    inp.oninput=()=>{it.ch.title=inp.value;const btn=$('toc').children[cur];if(btn)btn.textContent=inp.value||'Sem título';scheduleRebuild();};
+    const merge=document.createElement('button');merge.type='button';merge.className='secondary';merge.textContent='Juntar com o anterior';merge.disabled=it.i===0;
+    merge.onclick=()=>{const prev=book.chapters[it.i-1];prev.blocks.push(...it.ch.blocks);book.chapters.splice(it.i,1);changed(cur-1);};
+    const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Excluir capítulo';
+    del.onclick=()=>{if(!confirm(`Excluir o capítulo “${it.ch.title}”?`))return;book.chapters.splice(it.i,1);changed(cur);};
+    bar.append(inp,merge,del);
+  }
+  pv.scrollTop=0;
+  [...$('toc').children].forEach((b,k)=>b.classList.toggle('on',k===cur));
+  const btn=$('toc').children[cur];if(btn)btn.scrollIntoView({block:'nearest'});
+  $('pvPrev').disabled=cur===0;$('pvNext').disabled=cur===es.length-1;
+}
+function changed(target){renderToc();go(target);renderChips();scheduleRebuild();}
+$('pvPrev').onclick=()=>go(cur-1);$('pvNext').onclick=()=>go(cur+1);
+$('pv').addEventListener('click',e=>{
+  const it=entries()[cur];if(!it||it.kind!=='ch')return;
+  const el=e.target.closest('[data-b]');if(!el)return;
+  $('pv').querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));
+  selBlock=+el.dataset.b;el.classList.add('sel');
+  const b=it.ch.blocks[selBlock];
+  $('blockinfo').textContent=b.t==='img'?'Imagem selecionada':b.t==='h'?'Título selecionado':'Parágrafo selecionado';
+  $('bSplit').disabled=selBlock===0;
+  $('blockbar').classList.remove('hide');
+});
+$('bClose').onclick=()=>{selBlock=-1;$('blockbar').classList.add('hide');$('pv').querySelectorAll('.sel').forEach(x=>x.classList.remove('sel'));};
+$('bDel').onclick=()=>{const it=entries()[cur];if(selBlock<0||it.kind!=='ch')return;const top=$('pv').scrollTop;it.ch.blocks.splice(selBlock,1);changed(cur);$('pv').scrollTop=top;};
+$('bSplit').onclick=()=>{
+  const it=entries()[cur];if(selBlock<1||it.kind!=='ch')return;
+  const rest=it.ch.blocks.splice(selBlock),b=rest[0];
+  const title=b.t==='h'?b.text:(b.t==='p'?b.text.split(/\s+/).slice(0,6).join(' ')+'…':'Novo capítulo');
+  book.chapters.splice(it.i+1,0,{title,blocks:rest});changed(cur+1);
+};
+function showPreview(){
+  imgUrl={};cur=0;
+  $('editHelp').innerHTML=book.mode==='flow'
+    ?'Toque em um capítulo para ver e <strong>renomear, juntar ou excluir</strong>. Toque em um parágrafo, título ou imagem para <strong>começar um capítulo ali</strong> ou <strong>remover o trecho</strong>. O EPUB é atualizado automaticamente.'
+    :'Navegue pelas páginas e remova as que não quiser (páginas em branco, propaganda, ficha catalográfica). O EPUB é atualizado automaticamente.';
+  renderToc();go(book.mode==='flow'&&book.coverImg&&book.chapters.length?1:0);renderChips();
+  $('previewPanel').classList.remove('hide');
+}
+
+/* ---------- conversão ---------- */
+$('cancel').onclick=()=>{cancelled=true;$('cancel').disabled=true;};
+convert.onclick=async()=>{
+  if(!selected||!pdf)return;
+  if(!window.pdfjsLib||!window.JSZip){alert('Bibliotecas não carregadas. Conecte-se à internet e recarregue a página.');return;}
+  convert.disabled=true;resetOutput();cancelled=false;$('cancel').disabled=false;$('cancel').classList.remove('hide');
+  try{
+    let from=Math.max(1,Math.min(pdf.numPages,parseInt($('pFrom').value,10)||1)),to=Math.max(1,Math.min(pdf.numPages,parseInt($('pTo').value,10)||pdf.numPages));
+    if(to<from)[from,to]=[to,from];
+    const format=$('format').value;
+    const o={title:$('title').value.trim()||'Livro',author:$('author').value.trim()||'Autor desconhecido',lang:$('lang').value,
+      mode:$('mode').value,quality:Number($('quality').value),mime:format==='png'?'image/png':'image/jpeg',ext:format==='png'?'png':'jpg',
+      from,to,cover:$('optCover').checked,gray:$('optGray').checked,inline:$('optInline').checked,headers:$('optHeaders').checked,
+      hyphen:$('optHyphen').checked,imgPages:$('optImgPages').checked,split:$('split').value};
+    const n=to-from+1;
+    if(o.mode==='fixed'&&n>1500&&!confirm(`Serão convertidas ${n} páginas. A conversão pode consumir muita memória. Continuar?`))return;
+    status('Abrindo PDF...',0);
+    const r=o.mode==='fixed'?await convertFixed(o):await convertFlow(o);
+    status('Compactando EPUB...',88);
+    book=r;opts=o;
+    const out=await buildEpub(r,o,m=>{if(!cancelled)status('Compactando EPUB...',88+m.percent*.12);});
+    if(cancelled)throw new Error('__cancel');
+    $('cancel').classList.add('hide');
+    try{let h=JSON.parse(localStorage.getItem(historyKey)||'[]');h.unshift({date:new Date().toLocaleString('pt-BR'),title:o.title,mode:o.mode==='fixed'?'Original':'Texto',pages:n,size:MB(out.size)});localStorage.setItem(historyKey,JSON.stringify(h.slice(0,30)));renderHistory()}catch(e){}
+    status(`Pronto! ${n} páginas ${o.mode==='fixed'?'preservadas visualmente':'convertidas em texto'}. Arquivo: ${MB(out.size)} MB`,100);
+    showPreview();setOutput(out);
+    $('previewPanel').scrollIntoView({behavior:'smooth',block:'start'});
+  }catch(e){
+    book=null;
+    if(e&&e.message==='__cancel'){$('status').textContent='Conversão cancelada.';$('progress').value=0;$('percent').textContent='';}
+    else{console.error(e);cancelled=false;try{status('Erro: '+(e.message||e),0);}catch(_){}alert('Não foi possível converter: '+(e.message||e));}
+  }
+  finally{convert.disabled=false;$('cancel').classList.add('hide');cancelled=false;}
+};
+})();
+</script></body></html>
