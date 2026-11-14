@@ -24,4 +24,16 @@ Converte PDF em EPUB direto no navegador, no celular ou no computador. O arquivo
 
 Bibliotecas: [PDF.js](https://mozilla.github.io/pdf.js/) 3.11 e [JSZip](https://stuk.github.io/jszip/) 3.10, carregadas do cdnjs.
 
-Ao mudar o `index.html`, aumente `VERSION` em `sw.js` para os aparelhos baixarem a nova versão.
+## Versionamento
+
+A versão atual aparece no rodapé do app, e o histórico fica no [CHANGELOG.md](CHANGELOG.md).
+
+Para lançar uma nova versão:
+
+1. Atualize o número em **dois lugares**, sempre iguais:
+   - `APP_VERSION` no `index.html` (ex.: `'1.2.0'`)
+   - `VERSION` no `sw.js` (ex.: `'pdf-epub-1.2.0'`)
+2. Registre as mudanças no `CHANGELOG.md`.
+3. Faça o commit e crie a tag: `git tag v1.2.0 && git push --tags`.
+
+Mudar o `VERSION` do `sw.js` é o que faz os aparelhos com o app instalado baixarem a versão nova; sem isso eles continuam usando a versão guardada no cache.

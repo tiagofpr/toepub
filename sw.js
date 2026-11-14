@@ -1,5 +1,5 @@
 /* Service worker do PDF para EPUB: cache offline + recebimento de PDFs pelo menu Compartilhar */
-const VERSION = 'pdf-epub-v3';
+const VERSION = 'pdf-epub-1.1.0'; // mantenha igual ao APP_VERSION do index.html
 const SHARED = 'shared-files';
 const ASSETS = ['./', './index.html', './manifest.webmanifest', './icon.svg', './icon-192.png', './icon-512.png'];
 const LIBS = [

@@ -20,6 +20,8 @@ details.adv{margin-top:18px;border:1px solid #dce5e7;border-radius:12px;padding:
 .pagepv.editable [data-b]{cursor:pointer;border-radius:4px;transition:background .1s}.pagepv.editable [data-b]:hover{background:#0870601a}.pagepv [data-b].sel{background:#08706033;outline:2px solid #087e70}
 .pvnav{display:flex;justify-content:space-between;gap:10px;margin-top:10px}.pvnav button{padding:9px 14px;font-size:.9rem}
 .dlrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+.kindle{overflow-wrap:anywhere;margin-top:14px;border:1px solid #cfe3e0;background:#f4fbfa;border-radius:12px;padding:14px 16px}.kindle h3{margin:0 0 6px;font-size:1rem}.kindle ol{margin:8px 0 0;padding-left:20px;line-height:1.55;font-size:.92rem}.kindle li{margin-bottom:8px}.kindle a{color:#087e70;font-weight:700}.kindle .close{float:right;padding:4px 10px;font-size:.85rem}
+.ver{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:#dce5e7;color:#435d66;font-size:.78rem;font-weight:700}
 </style></head><body><header><div class="inner"><h1>📚 PDF para EPUB</h1><p>Converta livros preservando imagens e aparência das páginas, ou em texto ajustável — no celular ou notebook.</p></div></header><main class="wrap">
 
 <section class="panel"><h2>1. Escolha o PDF</h2><div class="drop" id="drop" role="button" tabindex="0"><strong>📄 Toque para selecionar ou arraste seu PDF</strong><span class="muted">O processamento acontece no seu dispositivo; o arquivo não é enviado a um servidor.</span></div><input type="file" id="file" accept="application/pdf,.pdf"><div id="fileinfo" class="fileinfo"><canvas id="thumb"></canvas><div id="fileinfoText"></div></div></section>
@@ -63,18 +65,30 @@ details.adv{margin-top:18px;border:1px solid #dce5e7;border-radius:12px;padding:
   <div class="pagepv" id="pv"></div>
   <div class="pvnav"><button type="button" class="secondary" id="pvPrev">← Anterior</button><button type="button" class="secondary" id="pvNext">Próxima →</button></div>
  </div></div>
- <div class="dlrow"><a id="download" class="btn">⬇ Baixar EPUB</a><button id="share" type="button" class="secondary hide">📤 Enviar para app (Kindle, Kobo…)</button></div>
+ <div class="dlrow"><a id="download" class="btn">⬇ Baixar EPUB</a><button id="share" type="button" class="secondary hide">📤 Enviar para o Kindle</button></div>
  <div id="sizeWarn" class="warn hide"></div>
+ <div id="kindleHelp" class="kindle hide" role="region" aria-live="polite">
+  <button type="button" class="secondary close" id="kindleClose">Fechar</button>
+  <h3>📚 Como enviar para o Kindle</h3>
+  <p class="note" id="kindleIntro" style="margin:0"></p>
+  <ol>
+   <li id="kStep1"></li>
+   <li><strong>Pelo site Send to Kindle:</strong> abra <a href="https://www.amazon.com/sendtokindle" target="_blank" rel="noopener">amazon.com/sendtokindle</a>, entre na sua conta Amazon e envie o arquivo.</li>
+   <li><strong>Por e-mail:</strong> anexe o arquivo e envie para o endereço <em>@kindle.com</em> do seu aparelho (até 50 MB), a partir de um e-mail autorizado na sua conta Amazon.</li>
+  </ol>
+  <p class="muted" style="margin:6px 0 0">Kobo, Lev, Boox e outros: copie o arquivo pelo cabo USB ou abra-o no app do leitor.</p>
+ </div>
 </section>
 
 <section class="panel"><h2>Histórico neste dispositivo</h2><p class="muted">Somente nome, data, modo e tamanho são guardados. PDFs e EPUBs não são armazenados pelo aplicativo.</p><ol id="history" class="history"></ol><button id="clearhistory" class="smallbtn" type="button">Limpar histórico</button></section>
 <section class="panel"><h2>Como instalar</h2><p class="note"><strong>No notebook:</strong> abra o endereço do app (HTTPS) no Chrome ou Edge e use “Instalar aplicativo”. <strong>No Android:</strong> abra o mesmo endereço no Chrome e escolha “Instalar aplicativo”. Depois de instalado, o conversor aparece no menu <strong>Compartilhar</strong> do Android: compartilhe um PDF de qualquer app (Arquivos, Drive, WhatsApp, Gmail) e ele abre direto aqui.</p><p class="note">Para funcionar offline, abra o aplicativo conectado à internet uma vez. A instalação PWA e o cache offline exigem HTTPS ou localhost.</p><p class="muted" id="offlineStatus">Verificando suporte offline...</p></section>
 <section class="panel"><h2>Como usar</h2><p class="note">1. Selecione um PDF. 2. Escolha o tipo de EPUB e, se quiser, ajuste as configurações avançadas (elas ficam salvas para a próxima vez). 3. Clique em <strong>Converter para EPUB</strong>. 4. Confira a prévia, faça ajustes e baixe ou envie o arquivo.</p><p class="note"><strong>Kindle:</strong> use o app ou site “Send to Kindle” da Amazon (por e-mail o limite é 50 MB). <strong>Kobo e outros:</strong> copie pelo cabo USB. Alguns leitores não oferecem suporte completo a EPUB de layout fixo; nesses, prefira o modo Texto adaptável.</p><p class="note"><strong>Importante:</strong> a primeira abertura precisa de internet para carregar as bibliotecas PDF.js e JSZip. PDFs grandes podem exigir bastante memória, especialmente no celular.</p></section>
-<footer>Conversor local • Seus PDFs permanecem no dispositivo</footer></main>
+<footer>Conversor local • Seus PDFs permanecem no dispositivo • <span id="appVersion"></span></footer></main>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 (()=>{'use strict';
+const APP_VERSION='1.1.0'; // mantenha igual ao VERSION do sw.js e ao CHANGELOG.md
 const $=id=>document.getElementById(id), drop=$('drop'), input=$('file'), convert=$('convert');
 let selected=null, pdf=null, downloadURL=null, previewURLs=[], cancelled=false, book=null, opts=null, epubBlob=null;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
@@ -82,6 +96,7 @@ const pad=n=>String(n).padStart(4,'0');
 const clean=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-zA-Z0-9_-]+/g,'_').slice(0,70)||'livro';
 const tick=()=>new Promise(r=>setTimeout(r,0));
 const MB=b=>(b/1048576).toFixed(1);
+$('appVersion').textContent='versão '+APP_VERSION;
 
 /* ---------- configurações salvas ---------- */
 const settingsKey='epub_settings_v1';
@@ -497,18 +512,37 @@ function setOutput(blob){
   if(downloadURL)URL.revokeObjectURL(downloadURL);
   downloadURL=URL.createObjectURL(blob);
   const a=$('download');a.href=downloadURL;a.setAttribute('download',fileName());a.classList.remove('busy');a.textContent=`⬇ Baixar EPUB (${MB(blob.size)} MB)`;
-  let canShare=false;
-  try{canShare=!!(navigator.canShare&&navigator.canShare({files:[new File([blob],fileName(),{type:'application/epub+zip'})]}));}catch(_){}
-  $('share').classList.toggle('hide',!canShare);
+  $('share').classList.remove('hide');$('kindleHelp').classList.add('hide');
   const w=$('sizeWarn');
   if(blob.size>50*1048576){w.innerHTML=`<strong>Arquivo com ${MB(blob.size)} MB.</strong> O Send to Kindle por e-mail aceita até 50 MB: use o app ou o site do Send to Kindle, ou converta de novo com qualidade “Leve”${opts.mode==='fixed'?' ou no modo Texto adaptável':''} e imagens em tons de cinza.`;w.classList.remove('hide');}
   else w.classList.add('hide');
   renderChips();
 }
+/* Navegadores baseados no Chrome (Chrome, Brave, Edge, Samsung Internet) só compartilham alguns tipos
+   de arquivo (imagens, PDF, vídeo, áudio, texto) — EPUB não entra. Nesses, baixamos e mostramos o caminho. */
+const ua=navigator.userAgent;
+const chromiumShareBlocked=/Chrome|Chromium|CriOS|EdgA|SamsungBrowser/i.test(ua)&&!/Firefox|FxiOS/i.test(ua)&&!/iPhone|iPad|iPod/i.test(ua);
+function kindleFallback(downloaded){
+  if(downloaded)$('download').click();
+  const nm=esc(fileName());
+  $('kStep1').innerHTML=/Android/i.test(ua)
+    ?`<strong>Pelo app Kindle:</strong> abra o app <em>Meus Arquivos</em> (ou <em>Arquivos</em>) → <em>Downloads</em> → toque e segure <strong>${nm}</strong> → <em>Compartilhar</em> → <em>Kindle</em>.`
+    :/iPhone|iPad|iPod/i.test(ua)
+    ?`<strong>Pelo app Kindle:</strong> no app <em>Arquivos</em>, abra <em>Downloads</em>, toque e segure <strong>${nm}</strong> → <em>Compartilhar</em> → <em>Kindle</em>.`
+    :`<strong>Pelo app Send to Kindle (Windows/Mac):</strong> arraste <strong>${nm}</strong> da pasta Downloads para o app.`;
+  $('kindleIntro').textContent=downloaded
+    ?'O navegador não permite enviar arquivos EPUB direto para outros apps, então o arquivo foi baixado para a pasta Downloads. Escolha um dos caminhos:'
+    :'Baixe o arquivo e escolha um dos caminhos:';
+  const box=$('kindleHelp');box.classList.remove('hide');box.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+$('kindleClose').onclick=()=>$('kindleHelp').classList.add('hide');
 $('share').onclick=async()=>{
   if(!epubBlob)return;
-  try{await navigator.share({files:[new File([epubBlob],fileName(),{type:'application/epub+zip'})],title:opts.title});}
-  catch(e){if(e.name!=='AbortError')alert('Não foi possível compartilhar: '+e.message+'. Use o botão Baixar.');}
+  const file=new File([epubBlob],fileName(),{type:'application/epub+zip'});
+  let can=false;try{can=!chromiumShareBlocked&&!!(navigator.canShare&&navigator.canShare({files:[file]}));}catch(_){}
+  if(!can){kindleFallback(true);return;}
+  try{await navigator.share({files:[file],title:opts.title});}
+  catch(e){if(e.name==='AbortError')return;kindleFallback(true);}
 };
 let rebuildTimer=null,rebuildRun=0;
 function scheduleRebuild(){
