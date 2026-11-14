@@ -6,6 +6,19 @@ Todas as mudanças do app ficam registradas aqui. O projeto segue [versionamento
 - **MINOR** (1.1.0): recurso novo compatível com o que já existe.
 - **PATCH** (1.1.1): correção de erro sem recurso novo.
 
+## [1.2.0] — 2026-11-14
+
+### Adicionado
+- **Menu de configurações** (botão ⚙️ no topo):
+  - **Temas:** Automático (segue o sistema), Claro, Escuro, Sépia, Preto (AMOLED) e Alto contraste.
+  - **Cor de destaque:** verde, azul, roxo, laranja, rosa ou grafite.
+  - **Tamanho do texto** da interface em 4 níveis.
+  - **Prévia do livro:** fonte (serifa, sem serifa, mono), tamanho da letra, espaçamento entre linhas e alinhamento.
+  - **Comportamento:** confirmar antes de excluir capítulos, ir para a prévia ao terminar, animações.
+  - **Dados:** restaurar padrões de conversão, restaurar aparência, limpar histórico.
+  - **Sobre:** versão atual, links para novidades e código, botão “Procurar atualização”.
+- Todas as preferências ficam salvas no aparelho, e o tema é aplicado antes de a página aparecer, sem piscar.
+
 ## [1.1.0] — 2026-11-14
 
 ### Corrigido

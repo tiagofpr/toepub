@@ -1,28 +1,170 @@
 <!DOCTYPE html>
 <html lang="pt-BR"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#142c36"><title>PDF → EPUB | Meu Conversor</title><link rel="manifest" href="manifest.webmanifest"><link rel="icon" href="icon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="icon-192.png">
 <style>
-:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#17313a;background:#eef3f4}*{box-sizing:border-box}body{margin:0}.wrap{max-width:850px;margin:auto;padding:24px 16px 50px}header{background:#142c36;color:white;padding:24px 16px}header .inner{max-width:850px;margin:auto}h1{margin:0;font-size:clamp(1.5rem,4vw,2.3rem)}header p{color:#c8d7dc;margin-bottom:0}.panel{background:white;border:1px solid #dce5e7;border-radius:18px;padding:24px;margin-top:20px;box-shadow:0 4px 18px #1536400a}h2{font-size:1.15rem;margin:0 0 14px}.drop{border:2px dashed #7aa5ac;border-radius:14px;padding:35px 16px;text-align:center;cursor:pointer;background:#f7fbfb}.drop.over{background:#e3f4f2;border-color:#137e76}.drop strong{display:block;font-size:1.1rem}.muted{color:#5b737b;font-size:.92rem}input[type=file]{display:none}.fileinfo{margin-top:12px;overflow-wrap:anywhere;font-weight:600;display:flex;gap:14px;align-items:center}.fileinfo canvas{width:60px;border-radius:4px;box-shadow:0 1px 5px #0003;flex:none}.fileinfo canvas:not([width]){display:none}.settings{display:grid;grid-template-columns:1fr 1fr;gap:16px}label{display:block;font-weight:600;margin-bottom:6px}select,input[type=text],input[type=number]{width:100%;padding:12px;border:1px solid #b8cbd0;border-radius:10px;font:inherit;background:white;color:inherit}button,.btn{display:inline-block;border:0;background:#087e70;color:white;font:inherit;font-weight:700;border-radius:11px;padding:14px 20px;cursor:pointer;text-decoration:none}button:hover,.btn:hover{background:#08695f}button:disabled{opacity:.5;cursor:not-allowed}.btn.busy{opacity:.6;pointer-events:none}.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px}progress{width:100%;height:18px;accent-color:#087e70}#status{font-size:.95rem;min-height:24px;margin-top:12px}.note{font-size:.9rem;line-height:1.6;color:#435d66}.hide{display:none!important}footer{color:#5b737b;text-align:center;font-size:.85rem;margin-top:25px}@media(max-width:560px){.settings{grid-template-columns:1fr}.panel{padding:18px}.wrap{padding-top:10px}}
-.modehelp{background:#eff8f6;border-left:4px solid #087e70;padding:12px;border-radius:8px}.history{padding-left:20px}.history li{margin:10px 0}.smallbtn{padding:8px 12px;font-size:.9rem}
-.secondary{background:#e3f4f2;color:#086b60}.secondary:hover{background:#d2ece8}.danger{background:#fbe9e5;color:#a4442b}.danger:hover{background:#f6d8d0}
-.warn{background:#fff5e0;border-left:4px solid #d99a1e;padding:10px 12px;border-radius:8px;font-size:.9rem;color:#6b4d0f;margin-top:12px}
-details.adv{margin-top:18px;border:1px solid #dce5e7;border-radius:12px;padding:0 16px}details.adv summary{cursor:pointer;font-weight:700;padding:14px 0;color:#087e70}details.adv[open] summary{border-bottom:1px solid #e6eef0;margin-bottom:14px}
+/* ===== Temas: todas as cores vêm destas variáveis ===== */
+:root,[data-theme=light]{
+ --bg:#eef3f4;--surface:#fff;--surface-2:#f7fbfb;--border:#dce5e7;--border-strong:#b8cbd0;--line:#e6eef0;
+ --text:#17313a;--muted:#5b737b;--note:#435d66;--header:#142c36;--header-ink:#fff;--header-sub:#c8d7dc;
+ --paper:#fbf9f4;--paper-ink:#222;--drop-border:#7aa5ac;--shadow:#1536400a;
+ --danger-bg:#fbe9e5;--danger-ink:#a4442b;--warn-bg:#fff5e0;--warn-line:#d99a1e;--warn-ink:#6b4d0f;
+ --overlay:#0b1a2066;color-scheme:light;
+}
+[data-theme=dark]{
+ --bg:#0f1719;--surface:#172226;--surface-2:#1b282c;--border:#2a3a3f;--border-strong:#3a4f55;--line:#24343a;
+ --text:#e3ecee;--muted:#93a9af;--note:#b4c6ca;--header:#0b1215;--header-ink:#fff;--header-sub:#9fb4ba;
+ --paper:#1d2427;--paper-ink:#e6e1d8;--drop-border:#46666d;--shadow:#0006;
+ --danger-bg:#3b211c;--danger-ink:#f2a894;--warn-bg:#352a12;--warn-line:#c99a3a;--warn-ink:#f1d9a6;
+ --overlay:#000a;color-scheme:dark;
+}
+[data-theme=amoled]{
+ --bg:#000;--surface:#0b0b0b;--surface-2:#111;--border:#222;--border-strong:#333;--line:#1a1a1a;
+ --text:#ececec;--muted:#9a9a9a;--note:#bdbdbd;--header:#000;--header-ink:#fff;--header-sub:#a0a0a0;
+ --paper:#0b0b0b;--paper-ink:#ddd;--drop-border:#3a3a3a;--shadow:#0000;
+ --danger-bg:#2a1410;--danger-ink:#f2a894;--warn-bg:#251d0b;--warn-line:#c99a3a;--warn-ink:#f1d9a6;
+ --overlay:#000c;color-scheme:dark;
+}
+[data-theme=sepia]{
+ --bg:#efe6d6;--surface:#fbf5ea;--surface-2:#f6eddc;--border:#e2d4bb;--border-strong:#cdb995;--line:#eadfca;
+ --text:#3b2f22;--muted:#7a6a55;--note:#5c4d3b;--header:#4a3a28;--header-ink:#fff8ec;--header-sub:#e3d3b8;
+ --paper:#f6ecd9;--paper-ink:#3b2f22;--drop-border:#bfa57b;--shadow:#4a3a2812;
+ --danger-bg:#f5ddd3;--danger-ink:#9a3f22;--warn-bg:#f8e9c6;--warn-line:#c48a1c;--warn-ink:#5e4310;
+ --overlay:#2b201566;color-scheme:light;
+}
+[data-theme=contrast]{
+ --bg:#fff;--surface:#fff;--surface-2:#fff;--border:#000;--border-strong:#000;--line:#000;
+ --text:#000;--muted:#1a1a1a;--note:#000;--header:#000;--header-ink:#fff;--header-sub:#fff;
+ --paper:#fff;--paper-ink:#000;--drop-border:#000;--shadow:#0000;
+ --danger-bg:#fff;--danger-ink:#a00000;--warn-bg:#fff;--warn-line:#000;--warn-ink:#000;
+ --overlay:#000a;color-scheme:light;
+}
+/* Cores de destaque */
+:root,[data-accent=green]{--accent:#087e70;--accent-hover:#08695f}
+[data-accent=blue]{--accent:#2563c9;--accent-hover:#1d4fa3}
+[data-accent=purple]{--accent:#7446c8;--accent-hover:#5e37a6}
+[data-accent=orange]{--accent:#c45a12;--accent-hover:#a3490c}
+[data-accent=pink]{--accent:#c23a73;--accent-hover:#a12d5f}
+[data-accent=slate]{--accent:#46586a;--accent-hover:#364553}
+[data-theme=dark][data-accent=green],[data-theme=amoled][data-accent=green]{--accent:#2fae9b;--accent-hover:#27937f}
+[data-theme=dark][data-accent=blue],[data-theme=amoled][data-accent=blue]{--accent:#5b93f0;--accent-hover:#477fe0}
+[data-theme=dark][data-accent=purple],[data-theme=amoled][data-accent=purple]{--accent:#9c78e8;--accent-hover:#8763d9}
+[data-theme=dark][data-accent=orange],[data-theme=amoled][data-accent=orange]{--accent:#e78a45;--accent-hover:#d47731}
+[data-theme=dark][data-accent=pink],[data-theme=amoled][data-accent=pink]{--accent:#e46a9e;--accent-hover:#d4558b}
+[data-theme=dark][data-accent=slate],[data-theme=amoled][data-accent=slate]{--accent:#8ea3b6;--accent-hover:#7a90a4}
+[data-theme=contrast]{--accent:#000!important;--accent-hover:#333!important}
+:root{--accent-ink:#fff;--accent-soft:color-mix(in srgb,var(--accent) 13%,var(--surface));--accent-soft-2:color-mix(in srgb,var(--accent) 22%,var(--surface));--accent-text:color-mix(in srgb,var(--accent) 80%,var(--text))}
+[data-theme=dark],[data-theme=amoled]{--accent-ink:#071412}
+/* Tamanho do texto */
+html{font-size:16px}html[data-size=small]{font-size:14.5px}html[data-size=large]{font-size:18px}html[data-size=xlarge]{font-size:20px}
+
+/* ===== Layout ===== */
+:root{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--text);background:var(--bg)}*{box-sizing:border-box}body{margin:0;transition:background .2s,color .2s}.wrap{max-width:850px;margin:auto;padding:24px 16px 50px}
+header{background:var(--header);color:var(--header-ink);padding:24px 16px}header .inner{max-width:850px;margin:auto;display:flex;gap:14px;align-items:flex-start}header .titles{flex:1;min-width:0}h1{margin:0;font-size:clamp(1.5rem,4vw,2.3rem)}header p{color:var(--header-sub);margin-bottom:0}
+.menubtn{flex:none;background:color-mix(in srgb,var(--header-ink) 12%,transparent);color:var(--header-ink);padding:10px 12px;border-radius:12px;font-size:1.25rem;line-height:1}.menubtn:hover{background:color-mix(in srgb,var(--header-ink) 22%,transparent)}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:18px;padding:24px;margin-top:20px;box-shadow:0 4px 18px var(--shadow)}h2{font-size:1.15rem;margin:0 0 14px}
+.drop{border:2px dashed var(--drop-border);border-radius:14px;padding:35px 16px;text-align:center;cursor:pointer;background:var(--surface-2)}.drop.over{background:var(--accent-soft);border-color:var(--accent)}.drop strong{display:block;font-size:1.1rem}
+.muted{color:var(--muted);font-size:.92rem}input[type=file]{display:none}.fileinfo{margin-top:12px;overflow-wrap:anywhere;font-weight:600;display:flex;gap:14px;align-items:center}.fileinfo canvas{width:60px;border-radius:4px;box-shadow:0 1px 5px #0003;flex:none}.fileinfo canvas:not([width]){display:none}
+.settings{display:grid;grid-template-columns:1fr 1fr;gap:16px}label{display:block;font-weight:600;margin-bottom:6px}
+select,input[type=text],input[type=number]{width:100%;padding:12px;border:1px solid var(--border-strong);border-radius:10px;font:inherit;background:var(--surface);color:inherit}
+button,.btn{display:inline-block;border:0;background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:700;border-radius:11px;padding:14px 20px;cursor:pointer;text-decoration:none}button:hover,.btn:hover{background:var(--accent-hover)}button:disabled{opacity:.5;cursor:not-allowed}.btn.busy{opacity:.6;pointer-events:none}
+.actions{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:20px}progress{width:100%;height:18px;accent-color:var(--accent)}#status{font-size:.95rem;min-height:24px;margin-top:12px}.note{font-size:.9rem;line-height:1.6;color:var(--note)}.hide{display:none!important}
+footer{color:var(--muted);text-align:center;font-size:.85rem;margin-top:25px}@media(max-width:560px){.settings{grid-template-columns:1fr}.panel{padding:18px}.wrap{padding-top:10px}}
+.modehelp{background:var(--accent-soft);border-left:4px solid var(--accent);padding:12px;border-radius:8px}.history{padding-left:20px}.history li{margin:10px 0}.smallbtn{padding:8px 12px;font-size:.9rem}
+.secondary{background:var(--accent-soft);color:var(--accent-text)}.secondary:hover{background:var(--accent-soft-2)}.danger{background:var(--danger-bg);color:var(--danger-ink)}.danger:hover{background:color-mix(in srgb,var(--danger-ink) 18%,var(--danger-bg))}
+.warn{background:var(--warn-bg);border-left:4px solid var(--warn-line);padding:10px 12px;border-radius:8px;font-size:.9rem;color:var(--warn-ink);margin-top:12px}
+details.adv{margin-top:18px;border:1px solid var(--border);border-radius:12px;padding:0 16px}details.adv summary{cursor:pointer;font-weight:700;padding:14px 0;color:var(--accent-text)}details.adv[open] summary{border-bottom:1px solid var(--line);margin-bottom:14px}
 .range{display:flex;gap:8px;align-items:center}.range span{flex:none}
-.checks{display:grid;gap:10px;margin:16px 0}.checks label{display:flex;gap:10px;align-items:flex-start;font-weight:500;margin:0}.checks input{margin-top:4px;accent-color:#087e70;width:18px;height:18px;flex:none}
+.checks{display:grid;gap:10px;margin:16px 0}.checks label{display:flex;gap:10px;align-items:flex-start;font-weight:500;margin:0}.checks input{margin-top:4px;accent-color:var(--accent);width:18px;height:18px;flex:none}
 .advgrid{padding-bottom:4px}
-.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.chip{background:#e3f4f2;color:#086b60;border-radius:99px;padding:5px 11px;font-size:.84rem;font-weight:700}.chip.alt{background:#fff5e0;color:#8a5a00}
+.chips{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.chip{background:var(--accent-soft);color:var(--accent-text);border-radius:99px;padding:5px 11px;font-size:.84rem;font-weight:700}.chip.alt{background:var(--warn-bg);color:var(--warn-ink)}
 .reader{display:grid;grid-template-columns:230px 1fr;gap:12px}.reader>div{min-width:0}@media(max-width:680px){.reader{grid-template-columns:1fr}}
-.toc{max-height:520px;overflow:auto;border:1px solid #dce5e7;border-radius:12px;padding:6px}@media(max-width:680px){.toc{max-height:190px}}
-.toc button{display:block;width:100%;text-align:left;background:none;color:#17313a;font-weight:500;font-size:.9rem;padding:8px 10px;border-radius:8px}.toc button:hover{background:#f0f6f6}.toc button.on{background:#e3f4f2;color:#086b60;font-weight:700}
+.toc{max-height:520px;overflow:auto;border:1px solid var(--border);border-radius:12px;padding:6px}@media(max-width:680px){.toc{max-height:190px}}
+.toc button{display:block;width:100%;text-align:left;background:none;color:var(--text);font-weight:500;font-size:.9rem;padding:8px 10px;border-radius:8px}.toc button:hover{background:var(--surface-2)}.toc button.on{background:var(--accent-soft);color:var(--accent-text);font-weight:700}
 .editbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:10px}.editbar input{flex:1 1 200px;padding:9px 11px}.editbar button{padding:9px 12px;font-size:.88rem}
-.blockbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:#142c36;color:#fff;border-radius:10px;padding:8px 10px;margin-bottom:10px;font-size:.88rem}.blockbar span{flex:1 1 140px}.blockbar button{padding:8px 11px;font-size:.85rem}
-.pagepv{background:#fbf9f4;border:1px solid #dce5e7;border-radius:12px;padding:22px 20px;max-height:520px;overflow:auto;font-family:Georgia,"Times New Roman",serif;font-size:1.02rem;line-height:1.6;color:#222}
-.pagepv h1{font-size:1.45rem;line-height:1.25;margin:.2em 0 .8em}.pagepv h2{font-size:1.15rem;margin:1.2em 0 .6em}.pagepv p{margin:0 0 .5em;text-indent:1.2em;text-align:justify}.pagepv p.li{text-indent:0;margin-left:.6em}.pagepv img{max-width:100%;display:block;margin:10px auto;border-radius:4px;box-shadow:0 1px 6px #0002}
-.pagepv.editable [data-b]{cursor:pointer;border-radius:4px;transition:background .1s}.pagepv.editable [data-b]:hover{background:#0870601a}.pagepv [data-b].sel{background:#08706033;outline:2px solid #087e70}
+.blockbar{display:flex;gap:8px;flex-wrap:wrap;align-items:center;background:var(--header);color:var(--header-ink);border-radius:10px;padding:8px 10px;margin-bottom:10px;font-size:.88rem}.blockbar span{flex:1 1 140px}.blockbar button{padding:8px 11px;font-size:.85rem}
+.pagepv{background:var(--paper);border:1px solid var(--border);border-radius:12px;padding:22px 20px;max-height:520px;overflow:auto;font-family:Georgia,"Times New Roman",serif;font-size:calc(1.02rem * var(--pv-scale));line-height:var(--pv-lh,1.6);color:var(--paper-ink)}
+html[data-pvfont=sans] .pagepv{font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+html[data-pvfont=mono] .pagepv{font-family:ui-monospace,"Cascadia Mono",Menlo,Consolas,monospace}
+.pagepv h1{font-size:1.45em;line-height:1.25;margin:.2em 0 .8em}.pagepv h2{font-size:1.15em;margin:1.2em 0 .6em}.pagepv p{margin:0 0 .5em;text-indent:1.2em;text-align:justify}html[data-pvalign=left] .pagepv p{text-align:left}.pagepv p.li{text-indent:0;margin-left:.6em}.pagepv img{max-width:100%;display:block;margin:10px auto;border-radius:4px;box-shadow:0 1px 6px #0002;background:#fff}
+.pagepv.editable [data-b]{cursor:pointer;border-radius:4px;transition:background .1s}.pagepv.editable [data-b]:hover{background:color-mix(in srgb,var(--accent) 10%,transparent)}.pagepv [data-b].sel{background:color-mix(in srgb,var(--accent) 20%,transparent);outline:2px solid var(--accent)}
 .pvnav{display:flex;justify-content:space-between;gap:10px;margin-top:10px}.pvnav button{padding:9px 14px;font-size:.9rem}
 .dlrow{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
-.kindle{overflow-wrap:anywhere;margin-top:14px;border:1px solid #cfe3e0;background:#f4fbfa;border-radius:12px;padding:14px 16px}.kindle h3{margin:0 0 6px;font-size:1rem}.kindle ol{margin:8px 0 0;padding-left:20px;line-height:1.55;font-size:.92rem}.kindle li{margin-bottom:8px}.kindle a{color:#087e70;font-weight:700}.kindle .close{float:right;padding:4px 10px;font-size:.85rem}
-.ver{display:inline-block;margin-left:6px;padding:2px 8px;border-radius:99px;background:#dce5e7;color:#435d66;font-size:.78rem;font-weight:700}
-</style></head><body><header><div class="inner"><h1>📚 PDF para EPUB</h1><p>Converta livros preservando imagens e aparência das páginas, ou em texto ajustável — no celular ou notebook.</p></div></header><main class="wrap">
+.kindle{overflow-wrap:anywhere;margin-top:14px;border:1px solid var(--border);background:var(--accent-soft);border-radius:12px;padding:14px 16px}.kindle h3{margin:0 0 6px;font-size:1rem}.kindle ol{margin:8px 0 0;padding-left:20px;line-height:1.55;font-size:.92rem}.kindle li{margin-bottom:8px}.kindle a{color:var(--accent-text);font-weight:700}.kindle .close{float:right;padding:4px 10px;font-size:.85rem}
+
+/* ===== Menu de configurações ===== */
+.overlay{position:fixed;inset:0;background:var(--overlay);opacity:0;pointer-events:none;transition:opacity .2s;z-index:40}
+.drawer{position:fixed;top:0;right:0;height:100%;width:min(380px,100%);background:var(--surface);color:var(--text);box-shadow:-8px 0 30px #0003;transform:translateX(105%);transition:transform .25s ease;z-index:50;display:flex;flex-direction:column}
+body.menu-open .overlay{opacity:1;pointer-events:auto}body.menu-open .drawer{transform:none}body.menu-open{overflow:hidden}
+.drawer-head{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid var(--line)}.drawer-head h2{margin:0;flex:1}
+.drawer-head button{background:var(--surface-2);color:var(--text);padding:8px 12px;font-size:1rem}
+.drawer-body{overflow:auto;padding:6px 18px 30px;flex:1}
+.drawer section{padding:14px 0;border-bottom:1px solid var(--line)}.drawer section:last-child{border-bottom:0}
+.drawer h3{font-size:.78rem;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin:4px 0 12px}
+.drawer .lbl{font-weight:600;font-size:.92rem;margin:12px 0 8px}
+.themes{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.theme{background:var(--surface-2);color:var(--text);border:2px solid var(--border);border-radius:12px;padding:8px;font-weight:600;font-size:.8rem;display:flex;flex-direction:column;align-items:center;gap:6px}
+.theme:hover{background:var(--surface-2);border-color:var(--border-strong)}.theme[aria-pressed=true]{border-color:var(--accent);box-shadow:0 0 0 2px var(--accent-soft-2)}
+.sw{width:100%;height:38px;border-radius:7px;border:1px solid #0002;display:grid;grid-template-rows:12px 1fr;overflow:hidden}.sw i{display:block}.sw b{display:block;margin:5px 7px;border-radius:3px}
+.accents{display:flex;gap:10px;flex-wrap:wrap}.acc{width:38px;height:38px;border-radius:50%;padding:0;border:3px solid var(--surface);box-shadow:0 0 0 2px var(--border)}.acc[aria-pressed=true]{box-shadow:0 0 0 3px var(--text)}
+.seg{display:flex;background:var(--surface-2);border:1px solid var(--border);border-radius:11px;padding:3px;gap:3px}.seg button{flex:1;background:none;color:var(--text);padding:8px 4px;font-size:.85rem;font-weight:600;border-radius:8px}.seg button:hover{background:var(--accent-soft)}.seg button[aria-pressed=true]{background:var(--accent);color:var(--accent-ink)}
+.slider{display:flex;align-items:center;gap:10px}.slider input{flex:1;accent-color:var(--accent)}.slider output{min-width:46px;text-align:right;font-weight:700;font-size:.9rem}
+.mini{margin-top:10px;background:var(--paper);color:var(--paper-ink);border:1px solid var(--border);border-radius:10px;padding:10px 12px;font-size:calc(.95rem * var(--pv-scale,1));line-height:var(--pv-lh,1.6);font-family:Georgia,serif}
+html[data-pvfont=sans] .mini{font-family:system-ui,sans-serif}html[data-pvfont=mono] .mini{font-family:ui-monospace,Menlo,Consolas,monospace}
+.switch{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:12px 0 0;font-weight:500;font-size:.92rem}.switch input{width:20px;height:20px;accent-color:var(--accent);flex:none}
+.stack{display:grid;gap:8px}.stack button{width:100%;text-align:left;padding:11px 14px;font-size:.9rem}
+.about{font-size:.9rem;line-height:1.6;color:var(--note)}.about a{color:var(--accent-text);font-weight:700}
+.toast{position:fixed;left:50%;bottom:22px;transform:translateX(-50%) translateY(30px);background:var(--header);color:var(--header-ink);padding:11px 16px;border-radius:12px;font-size:.9rem;opacity:0;transition:.25s;z-index:60;pointer-events:none;max-width:90vw}.toast.show{opacity:1;transform:translateX(-50%)}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}html[data-motion=off] *{transition:none!important;scroll-behavior:auto!important}
+</style>
+<script>/* aplica tema antes de desenhar a página (evita piscar) */
+(function(){var u={};try{u=JSON.parse(localStorage.getItem('epub_ui_v1')||'{}')}catch(e){}
+var d=document.documentElement,t=u.theme||'auto';if(t==='auto')t=matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light';
+d.dataset.theme=t;d.dataset.accent=u.accent||'green';d.dataset.size=u.size||'normal';d.dataset.pvfont=u.pvfont||'serif';d.dataset.pvalign=u.pvalign||'justify';
+if(u.motion===false)d.dataset.motion='off';d.style.setProperty('--pv-scale',(u.pvscale||100)/100);d.style.setProperty('--pv-lh',u.pvlh||1.6);})();
+</script></head><body><header><div class="inner"><div class="titles"><h1>📚 PDF para EPUB</h1><p>Converta livros preservando imagens e aparência das páginas, ou em texto ajustável — no celular ou notebook.</p></div><button type="button" class="menubtn" id="menuBtn" aria-label="Abrir configurações" aria-controls="drawer" aria-expanded="false">⚙️</button></div></header>
+<div class="overlay" id="overlay"></div>
+<aside class="drawer" id="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle" aria-hidden="true">
+ <div class="drawer-head"><h2 id="drawerTitle">⚙️ Configurações</h2><button type="button" id="menuClose" aria-label="Fechar configurações">✕</button></div>
+ <div class="drawer-body">
+  <section><h3>Aparência</h3>
+   <div class="lbl">Tema</div>
+   <div class="themes" id="themes"></div>
+   <div class="lbl">Cor de destaque</div>
+   <div class="accents" id="accents"></div>
+   <div class="lbl">Tamanho do texto</div>
+   <div class="seg" id="sizeSeg" data-key="size"><button type="button" data-v="small">A−</button><button type="button" data-v="normal">A</button><button type="button" data-v="large">A+</button><button type="button" data-v="xlarge">A++</button></div>
+  </section>
+  <section><h3>Prévia do livro</h3>
+   <div class="lbl">Fonte</div>
+   <div class="seg" data-key="pvfont"><button type="button" data-v="serif" style="font-family:Georgia,serif">Serifa</button><button type="button" data-v="sans">Sem serifa</button><button type="button" data-v="mono" style="font-family:ui-monospace,monospace">Mono</button></div>
+   <div class="lbl">Tamanho da letra</div>
+   <div class="slider"><input type="range" id="pvScale" min="80" max="150" step="5"><output id="pvScaleOut"></output></div>
+   <div class="lbl">Espaçamento entre linhas</div>
+   <div class="seg" data-key="pvlh"><button type="button" data-v="1.35">Compacto</button><button type="button" data-v="1.6">Normal</button><button type="button" data-v="1.9">Amplo</button></div>
+   <div class="lbl">Alinhamento</div>
+   <div class="seg" data-key="pvalign"><button type="button" data-v="justify">Justificado</button><button type="button" data-v="left">À esquerda</button></div>
+   <div class="mini">Investir bem é, acima de tudo, uma questão de clareza: saber seus objetivos e o caminho até eles.</div>
+   <p class="muted" style="margin:8px 0 0">Isso muda só a prévia. No leitor, a fonte e o tamanho seguem as configurações do aparelho.</p>
+  </section>
+  <section><h3>Comportamento</h3>
+   <label class="switch">Confirmar antes de excluir capítulos<input type="checkbox" id="prefConfirm"></label>
+   <label class="switch">Ir para a prévia ao terminar a conversão<input type="checkbox" id="prefScroll"></label>
+   <label class="switch">Animações<input type="checkbox" id="prefMotion"></label>
+  </section>
+  <section><h3>Dados</h3>
+   <div class="stack">
+    <button type="button" class="secondary" id="resetConv">↺ Restaurar padrões de conversão</button>
+    <button type="button" class="secondary" id="resetLook">↺ Restaurar aparência padrão</button>
+    <button type="button" class="danger" id="clearHist2">🗑 Limpar histórico de conversões</button>
+   </div>
+  </section>
+  <section><h3>Sobre</h3>
+   <div class="about"><strong>PDF para EPUB</strong> — <span id="aboutVer"></span><br>Tudo roda no seu aparelho; nenhum arquivo é enviado a servidores.<br>
+    <a href="https://github.com/tiagofpr/toepub/blob/main/CHANGELOG.md" target="_blank" rel="noopener">Novidades da versão</a> · <a href="https://github.com/tiagofpr/toepub" target="_blank" rel="noopener">Código no GitHub</a></div>
+   <div class="stack" style="margin-top:12px"><button type="button" class="secondary" id="checkUpd">🔄 Procurar atualização</button></div>
+  </section>
+ </div>
+</aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div><main class="wrap">
 
 <section class="panel"><h2>1. Escolha o PDF</h2><div class="drop" id="drop" role="button" tabindex="0"><strong>📄 Toque para selecionar ou arraste seu PDF</strong><span class="muted">O processamento acontece no seu dispositivo; o arquivo não é enviado a um servidor.</span></div><input type="file" id="file" accept="application/pdf,.pdf"><div id="fileinfo" class="fileinfo"><canvas id="thumb"></canvas><div id="fileinfoText"></div></div></section>
 
@@ -88,7 +230,7 @@ details.adv{margin-top:18px;border:1px solid #dce5e7;border-radius:12px;padding:
 <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 <script>
 (()=>{'use strict';
-const APP_VERSION='1.1.0'; // mantenha igual ao VERSION do sw.js e ao CHANGELOG.md
+const APP_VERSION='1.2.0'; // mantenha igual ao VERSION do sw.js e ao CHANGELOG.md
 const $=id=>document.getElementById(id), drop=$('drop'), input=$('file'), convert=$('convert');
 let selected=null, pdf=null, downloadURL=null, previewURLs=[], cancelled=false, book=null, opts=null, epubBlob=null;
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&apos;'}[c]));
@@ -97,6 +239,61 @@ const clean=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-zA-Z0-9_-]
 const tick=()=>new Promise(r=>setTimeout(r,0));
 const MB=b=>(b/1048576).toFixed(1);
 $('appVersion').textContent='versão '+APP_VERSION;
+
+/* ---------- menu de configurações ---------- */
+const uiKey='epub_ui_v1',UI_DEFAULT={theme:'auto',accent:'green',size:'normal',pvfont:'serif',pvscale:100,pvlh:'1.6',pvalign:'justify',confirm:true,scroll:true,motion:true};
+let ui={...UI_DEFAULT};try{Object.assign(ui,JSON.parse(localStorage.getItem(uiKey)||'{}'));}catch(_){}
+const THEMES=[['auto','Automático',['#eef3f4','#142c36','#0f1719']],['light','Claro',['#eef3f4','#142c36','#ffffff']],['dark','Escuro',['#0f1719','#0b1215','#172226']],
+  ['sepia','Sépia',['#efe6d6','#4a3a28','#fbf5ea']],['amoled','Preto',['#000000','#000000','#111111']],['contrast','Alto contraste',['#ffffff','#000000','#ffffff']]];
+const ACCENTS=[['green','Verde','#087e70'],['blue','Azul','#2563c9'],['purple','Roxo','#7446c8'],['orange','Laranja','#c45a12'],['pink','Rosa','#c23a73'],['slate','Grafite','#46586a']];
+const darkMQ=matchMedia('(prefers-color-scheme: dark)');
+function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toast._t);toast._t=setTimeout(()=>t.classList.remove('show'),2200);}
+function applyUI(){
+  const d=document.documentElement,t=ui.theme==='auto'?(darkMQ.matches?'dark':'light'):ui.theme;
+  d.dataset.theme=t;d.dataset.accent=ui.accent;d.dataset.size=ui.size;d.dataset.pvfont=ui.pvfont;d.dataset.pvalign=ui.pvalign;
+  if(ui.motion===false)d.dataset.motion='off';else delete d.dataset.motion;
+  d.style.setProperty('--pv-scale',ui.pvscale/100);d.style.setProperty('--pv-lh',ui.pvlh);
+  const meta=document.querySelector('meta[name=theme-color]');if(meta)meta.content=getComputedStyle(d).getPropertyValue('--header').trim()||'#142c36';
+  document.querySelectorAll('#themes .theme').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===ui.theme));
+  document.querySelectorAll('#accents .acc').forEach(b=>b.setAttribute('aria-pressed',b.dataset.v===ui.accent));
+  document.querySelectorAll('.seg[data-key]').forEach(seg=>seg.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',String(ui[seg.dataset.key])===b.dataset.v)));
+  $('pvScale').value=ui.pvscale;$('pvScaleOut').textContent=ui.pvscale+'%';
+  $('prefConfirm').checked=ui.confirm!==false;$('prefScroll').checked=ui.scroll!==false;$('prefMotion').checked=ui.motion!==false;
+}
+function setUI(k,v){ui[k]=v;try{localStorage.setItem(uiKey,JSON.stringify(ui));}catch(_){}applyUI();}
+THEMES.forEach(([v,name,c])=>{const b=document.createElement('button');b.type='button';b.className='theme';b.dataset.v=v;
+  b.innerHTML=`<span class="sw" style="background:${c[0]}"><i style="background:${c[1]}"></i>${v==='auto'?`<b style="background:linear-gradient(90deg,${c[2]} 50%,#ffffff 50%)"></b>`:`<b style="background:${c[2]}"></b>`}</span>${name}`;
+  b.onclick=()=>setUI('theme',v);$('themes').append(b);});
+ACCENTS.forEach(([v,name,c])=>{const b=document.createElement('button');b.type='button';b.className='acc';b.dataset.v=v;b.title=name;b.setAttribute('aria-label','Cor '+name);b.style.background=c;
+  b.onclick=()=>setUI('accent',v);$('accents').append(b);});
+document.querySelectorAll('.seg[data-key]').forEach(seg=>seg.querySelectorAll('button').forEach(b=>b.onclick=()=>setUI(seg.dataset.key,b.dataset.v)));
+$('pvScale').oninput=e=>setUI('pvscale',+e.target.value);
+$('prefConfirm').onchange=e=>setUI('confirm',e.target.checked);
+$('prefScroll').onchange=e=>setUI('scroll',e.target.checked);
+$('prefMotion').onchange=e=>setUI('motion',e.target.checked);
+darkMQ.addEventListener&&darkMQ.addEventListener('change',()=>{if(ui.theme==='auto')applyUI();});
+$('resetLook').onclick=()=>{ui={...UI_DEFAULT};try{localStorage.removeItem(uiKey);}catch(_){}applyUI();toast('Aparência restaurada');};
+$('resetConv').onclick=()=>{try{localStorage.removeItem('epub_settings_v1');}catch(_){}
+  document.querySelectorAll('[data-keep]').forEach(el=>{if(el.type==='checkbox')el.checked=el.defaultChecked;else{const d=[...el.options].find(o=>o.defaultSelected)||el.options[0];el.value=d.value;}});
+  $('mode').dispatchEvent(new Event('change'));toast('Padrões de conversão restaurados');};
+$('clearHist2').onclick=()=>{if(!confirm('Apagar o histórico de conversões deste aparelho?'))return;$('clearhistory').click();toast('Histórico apagado');};
+$('aboutVer').textContent='versão '+APP_VERSION;
+$('checkUpd').onclick=async()=>{
+  if(!('serviceWorker' in navigator)||location.protocol==='file:'){toast('Atualização automática indisponível aqui');return;}
+  const btn=$('checkUpd');btn.disabled=true;btn.textContent='Procurando…';
+  try{const reg=await navigator.serviceWorker.getRegistration();if(reg)await reg.update();
+    const r=await fetch('./index.html',{cache:'no-store'}),txt=await r.text(),m=txt.match(/APP_VERSION='([\d.]+)'/);
+    if(m&&m[1]!==APP_VERSION){toast('Nova versão '+m[1]+' encontrada. Recarregando…');setTimeout(()=>location.reload(),1200);}
+    else toast('Você já está na versão mais recente ('+APP_VERSION+')');
+  }catch(e){toast('Sem conexão para verificar agora');}
+  btn.disabled=false;btn.textContent='🔄 Procurar atualização';
+};
+let lastFocus=null;
+function openMenu(){lastFocus=document.activeElement;document.body.classList.add('menu-open');$('drawer').setAttribute('aria-hidden','false');$('menuBtn').setAttribute('aria-expanded','true');setTimeout(()=>$('menuClose').focus(),50);}
+function closeMenu(){document.body.classList.remove('menu-open');$('drawer').setAttribute('aria-hidden','true');$('menuBtn').setAttribute('aria-expanded','false');if(lastFocus)lastFocus.focus();}
+$('menuBtn').onclick=openMenu;$('menuClose').onclick=closeMenu;$('overlay').onclick=closeMenu;
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&document.body.classList.contains('menu-open'))closeMenu();});
+applyUI();
 
 /* ---------- configurações salvas ---------- */
 const settingsKey='epub_settings_v1';
@@ -601,7 +798,7 @@ function go(i){
     const merge=document.createElement('button');merge.type='button';merge.className='secondary';merge.textContent='Juntar com o anterior';merge.disabled=it.i===0;
     merge.onclick=()=>{const prev=book.chapters[it.i-1];prev.blocks.push(...it.ch.blocks);book.chapters.splice(it.i,1);changed(cur-1);};
     const del=document.createElement('button');del.type='button';del.className='danger';del.textContent='Excluir capítulo';
-    del.onclick=()=>{if(!confirm(`Excluir o capítulo “${it.ch.title}”?`))return;book.chapters.splice(it.i,1);changed(cur);};
+    del.onclick=()=>{if(ui.confirm!==false&&!confirm(`Excluir o capítulo “${it.ch.title}”?`))return;book.chapters.splice(it.i,1);changed(cur);};
     bar.append(inp,merge,del);
   }
   pv.scrollTop=0;
@@ -664,7 +861,7 @@ convert.onclick=async()=>{
     try{let h=JSON.parse(localStorage.getItem(historyKey)||'[]');h.unshift({date:new Date().toLocaleString('pt-BR'),title:o.title,mode:o.mode==='fixed'?'Original':'Texto',pages:n,size:MB(out.size)});localStorage.setItem(historyKey,JSON.stringify(h.slice(0,30)));renderHistory()}catch(e){}
     status(`Pronto! ${n} páginas ${o.mode==='fixed'?'preservadas visualmente':'convertidas em texto'}. Arquivo: ${MB(out.size)} MB`,100);
     showPreview();setOutput(out);
-    $('previewPanel').scrollIntoView({behavior:'smooth',block:'start'});
+    if(ui.scroll!==false)$('previewPanel').scrollIntoView({behavior:'smooth',block:'start'});
   }catch(e){
     book=null;
     if(e&&e.message==='__cancel'){$('status').textContent='Conversão cancelada.';$('progress').value=0;$('percent').textContent='';}
